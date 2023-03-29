@@ -1,4 +1,7 @@
-# Environment Variables
+# E-comp Backend Server
+Backend server hosting the API
+
+## Backend Environment Variables
 - DB_HOST: ip of database server
 - DB_PORT: port of database server
 - DB_NAME: name of the database
