@@ -17,19 +17,18 @@ CREATE TABLE IF NOT EXISTS events (
     Team BOOLEAN NOT NULL,
     Teams TEXT,  -- This one will be storing a JSON sting
     CurrentActivityset INT UNSIGNED,
-    PRIMARY KEY (EventID)
+    PRIMARY KEY (EventID),
+    CONSTRAINT FK_Host FOREIGN KEY (Host) REFERENCES users(Username)
 );
 
 CREATE TABLE IF NOT EXISTS participants (
     JoinLog INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Username VARCHAR(64),
     JoinedEvent INT UNSIGNED,
-    HostedEvent INT UNSIGNED,
     Team VARCHAR(64),
     PRIMARY KEY (JoinLog),
     CONSTRAINT FK_Username FOREIGN KEY (Username) REFERENCES users(Username),
-    CONSTRAINT FK_Joined FOREIGN KEY (JoinedEvent) REFERENCES events(EventID),
-    CONSTRAINT FK_Hosted FOREIGN KEY (HostedEvent) REFERENCES events(EventID)
+    CONSTRAINT FK_Joined FOREIGN KEY (JoinedEvent) REFERENCES events(EventID)
 );
 
 CREATE TABLE IF NOT EXISTS activitysets (
