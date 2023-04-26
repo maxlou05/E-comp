@@ -1,6 +1,9 @@
-const { DataTypes } = require('sequelize')
-const { ActivityModel } = require('./activity')
-const { UserModel } = require('./user')
+const { DataTypes, Model } = require('sequelize')
+const { sequelize } = require('../connection')
+const { Activity } = require('./activity')
+const { User } = require('./user')
+
+class Submission extends Model {}
 
 const SubmissionModel = {
     SubmissionID: {
@@ -13,7 +16,7 @@ const SubmissionModel = {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-            model: ActivityModel,
+            model: Activity,
             key: 'ActivityID'
         }
     },
@@ -21,7 +24,7 @@ const SubmissionModel = {
         type: DataTypes.STRING(50),
         allowNull: false,
         references: {
-            model: UserModel,
+            model: User,
             key: 'Username'
         }
     },
@@ -54,8 +57,6 @@ const SubmissionModel = {
     }
 }
 
-const SubmissionModelOptions = {
-    tableName: 'Submissions'
-}
+Submission.init(SubmissionModel, { sequelize, tableName:'Submissions' })
 
-module.exports = { SubmissionModel, SubmissionModelOptions }
+module.exports = { Submission }

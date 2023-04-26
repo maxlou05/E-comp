@@ -1,5 +1,8 @@
-const { DataTypes } = require('sequelize')
-const { UserModel } = require('./user')
+const { DataTypes, Model } = require('sequelize')
+const { sequelize } = require('../connection')
+const { User } = require('./user')
+
+class Event extends Model {}
 
 const EventModel = {
     EventID: {
@@ -11,7 +14,7 @@ const EventModel = {
     Host: {
         type: DataTypes.STRING(50),
         references: {
-            model: UserModel,
+            model: User,
             key: 'Username'
         },
         allowNull: false
@@ -45,7 +48,7 @@ const EventModel = {
         allowNull: false
     },
     Teams: {
-        type: DataTypes.STRING(65535)
+        type: DataTypes.STRING(2000)
     },
     Public: {
         type: DataTypes.BOOLEAN,
@@ -53,8 +56,6 @@ const EventModel = {
     }
 }
 
-const EventModelOptions = {
-    tableName: 'Events'
-}
+Event.init(EventModel, { sequelize, tableName:'Events' })
 
-module.exports = { EventModel, EventModelOptions }
+module.exports = { Event }

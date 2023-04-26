@@ -1,5 +1,8 @@
-const { DataTypes } = require('sequelize')
-const { ActivitySetModel } = require('./activity_set')
+const { DataTypes, Model } = require('sequelize')
+const { sequelize } = require('../connection')
+const { ActivitySet } = require('./activity_set')
+
+class Activity extends Model {}
 
 const ActivityModel = {
     ActivityID: {
@@ -11,7 +14,7 @@ const ActivityModel = {
     ActivitySetID: {
         type: DataTypes.INTEGER.UNSIGNED,
         references: {
-            model: ActivitySetModel,
+            model: ActivitySet,
             key: 'ActivitySetID'
         },
         allowNull: false
@@ -39,8 +42,6 @@ const ActivityModel = {
     }
 }
 
-const ActivityModelOptions = {
-    tableName: 'Activities'
-}
+Activity.init(ActivityModel, { sequelize, tableName:'Activities' })
 
-module.exports = { ActivityModel, ActivityModelOptions }
+module.exports = { Activity }

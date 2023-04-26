@@ -8,3 +8,7 @@ Backend server hosting the API
 - DB_USERNAME: username for database
 - DB_PASSWORD: password for database
 - JWK: 256-bit secret key
+
+## Testing
+- npm run unit-test: unit test (internal server tests)
+- npm run it-test: integration test (tests http requests to the server)

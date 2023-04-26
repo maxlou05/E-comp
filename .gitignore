@@ -1,6 +1,13 @@
-**.env.**
-/tests
+**.env**
 
+# Backend
+# dependencies
+backend/node_modules
+
+# notes
+backend/*.txt
+
+# Frontend
 # dependencies
 frontend/node_modules
 frontend/.pnp

@@ -1,6 +1,9 @@
-const { DataTypes } = require('sequelize')
-const { UserModel } = require('./user')
-const { EventModel } = require('./event')
+const { DataTypes, Model } = require('sequelize')
+const { sequelize } = require('../connection')
+const { User } = require('./user')
+const { Event } = require('./event')
+
+class Participant extends Model {}
 
 const ParticipantModel = {
     JoinLog: {
@@ -13,7 +16,7 @@ const ParticipantModel = {
         type: DataTypes.STRING(50),
         allowNull: false,
         references: {
-            model: UserModel,
+            model: User,
             key: 'Username'
         }
     },
@@ -21,7 +24,7 @@ const ParticipantModel = {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-            model: EventModel,
+            model: Event,
             key: 'EventID'
         }
     },
@@ -30,8 +33,6 @@ const ParticipantModel = {
     }
 }
 
-const ParticipantModelOptions = {
-    tableName: 'Participants'
-}
+Participant.init(ParticipantModel, { sequelize, tablename:'Participants' })
 
-module.exports = { ParticipantModel, ParticipantModelOptions }
+module.exports = { Participant, ParticipantModel }
