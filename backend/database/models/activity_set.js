@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize')
-const { sequelize } = require('../connection')
-const { Event } = require('./event')
+const sequelize = require('../connection')
+const Event = require('./event')
 
 class ActivitySet extends Model {}
 
@@ -36,6 +36,6 @@ const ActivitySetModel = {
     }
 }
 
-ActivitySet.init(ActivitySetModel, { sequelize, tableName:'ActivitySets' })
+ActivitySet.init(ActivitySetModel, {sequelize, modelName: 'ActivitySet', tableName: 'ActivitySets'})
 
-module.exports = { ActivitySet }
+module.exports = ActivitySet

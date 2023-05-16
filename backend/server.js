@@ -132,7 +132,7 @@ app.get('/protected', async (req, res) => {
 
 app.get('/db', (req, res) => {
     dbQuery("SELECT * FROM users", (err, result, fields) => {
-        if(err) throw err
+        if (err) throw err
         console.log(result)
     })
 })
@@ -174,7 +174,7 @@ app.put('/account', jsonParser, (req, res) => {
     
     con.query(`INSERT INTO users VALUES ('${req.body.username}', '${hashed_password}')`, (err, result) => {
         if (err) {
-            if (err.code = 'ER_DUP_ENTRY') res.status(403).setHeader('Content-type', 'application/json').end(JSON.stringify({"error": "username already exists"}, null, 2));
+            if (err.code = 'ER_DUP_ENTRY') res.status(406).setHeader('Content-type', 'application/json').end(JSON.stringify({"error": "username already exists"}, null, 2));
             console.log(err);
         }
         else {
@@ -183,7 +183,7 @@ app.put('/account', jsonParser, (req, res) => {
     });
 });
 
-app.post('/login', urlencodedParser, async (req, res) => {
+app.post('/account/login', urlencodedParser, async (req, res) => {
     const hashed_password = hash(req.body.password, {algorithm:'RSA-SHA256'});
     con.query(`SELECT * FROM users WHERE Username='${req.body.username}'`, async (err, result) => {
         if (err) throw err;

@@ -1,7 +1,7 @@
 const { describe, it } = require('node:test')
 const { expect } = require('chai')
-const { User } = require('../../database/models/user')
-const { connect, reset_db } = require('../../database/utils')
+const User = require('../../database/models/user')
+const { init } = require('../../database/utils')
 const hash = require('object-hash')
 
 async function user_test() {
@@ -16,8 +16,7 @@ async function user_test() {
 
 describe('Create and query user', () => {
     it('should return list with one user', async () => {
-        await connect()
-        await reset_db()
+        await init()
         const users = await user_test()
         expect(users).to.include.deep.members([{"Username":"admin", "HashedPassword":hash('adminpw', {algorithm:'RSA-SHA256'})}])
     })

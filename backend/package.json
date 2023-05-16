@@ -12,13 +12,13 @@
     "sequelize": "^6.31.0"
   },
   "devDependencies": {
-    "axios": "^1.3.6",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "sqlite3": "^5.1.6"
   },
   "scripts": {
-    "start": "nodemon ./server.js",
+    "start": "nodemon ./index.js",
     "unit-test": "mocha ./tests/unit",
     "it-test": "mocha ./tests/integration"
   }

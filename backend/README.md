@@ -8,6 +8,11 @@ Backend server hosting the API
 - DB_USERNAME: username for database
 - DB_PASSWORD: password for database
 - JWK: 256-bit secret key
+- JWT_ALG: algorithm for JWT encoding
+- HAHS_ALG: hasing algorithm for password
+- SERVER_HOST: ip of the API server
+- SERVER_PORT: port of the API server
+- TEST: 1 for running in test environment (local memory), 0 for running using the database
 
 ## Testing
 - npm run unit-test: unit test (internal server tests)

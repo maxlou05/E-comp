@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize')
-const { sequelize } = require('../connection')
-const { User } = require('./user')
+const sequelize = require('../connection')
+const User = require('./user')
 
 class Event extends Model {}
 
@@ -56,6 +56,6 @@ const EventModel = {
     }
 }
 
-Event.init(EventModel, { sequelize, tableName:'Events' })
+Event.init(EventModel, {sequelize, modelName: 'Event', tableName: 'Events'})
 
-module.exports = { Event }
+module.exports = Event

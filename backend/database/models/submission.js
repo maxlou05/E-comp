@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize')
-const { sequelize } = require('../connection')
-const { Activity } = require('./activity')
-const { User } = require('./user')
+const sequelize = require('../connection')
+const Activity = require('./activity')
+const User = require('./user')
 
 class Submission extends Model {}
 
@@ -57,6 +57,6 @@ const SubmissionModel = {
     }
 }
 
-Submission.init(SubmissionModel, { sequelize, tableName:'Submissions' })
+Submission.init(SubmissionModel, {sequelize, modelName: 'Submission', tableName: 'Submissions'})
 
-module.exports = { Submission }
+module.exports = Submission

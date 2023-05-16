@@ -1,5 +1,5 @@
 const { DataTypes, Model } = require('sequelize')
-const { sequelize } = require('../connection')
+const sequelize = require('../connection')
 
 class User extends Model {}
 
@@ -16,8 +16,6 @@ const UserModel = {
     }
 }
 
-// Initialize it
-User.init(UserModel, { sequelize, tableName:'Users' })  // placing just the 'sequelize' in the object means both key and value has same variable name (shorthand)
-// User.sync({ force: true })
+User.init(UserModel, {sequelize, modelName: 'User', tableName: 'Users'})
 
-module.exports = { User }
+module.exports = User

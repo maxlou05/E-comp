@@ -1,20 +1,14 @@
 const { Sequelize } = require('sequelize')
-const { config } = require('dotenv')
 
-// load environment variables
-config({ path:'./.env' })
+// Load environment variables (path is relative to the project root (/backend))
+require('dotenv').config({ path: './.env' })
 
-const sequelize = new Sequelize({
-    database: process.env.DB_NAME,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    dialect: 'mysql',
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    define: {
-        timestamps: false  // This disables auto timestamps created by Sequelize on all tables
-    }
-    // logging: false  // This disables logging, but default logs all database queries to console.log
-})
+// Settings for the database server
+const settings = require('./settings')
 
-module.exports = { sequelize }
+let options = undefined
+// If using testing environemnt, use these settings instead (local memory)
+if(process.env.TEST == 1) options = settings.test
+else options = settings.production
+
+module.exports = new Sequelize(options)
