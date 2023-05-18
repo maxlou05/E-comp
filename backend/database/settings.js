@@ -1,3 +1,5 @@
+require('dotenv').config({ path: './.env' })
+
 const production = {
     database: process.env.DB_NAME,
     username: process.env.DB_USERNAME,
@@ -7,8 +9,8 @@ const production = {
     port: process.env.DB_PORT,
     define: {
         timestamps: false  // This disables auto timestamps created by Sequelize on all tables
-    }
-    // logging: false  // This disables logging, but default logs all database queries to console.log
+    },
+    logging: process.env.TEST_LOGS == 1 ? true : false  // This enables/disables logging. true logs all database queries to console.log
 }
 
 const test = {
@@ -16,7 +18,8 @@ const test = {
     storage: ':memory:',
     define: {
         timestamps: false
-    }
+    },
+    logging: process.env.TEST_LOGS == 1 ? true : false
 }
 
 module.exports.production = production

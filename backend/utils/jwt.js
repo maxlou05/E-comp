@@ -28,7 +28,7 @@ async function verify_token(jwt) {
         // catch any errors if there are 
         if(err.claim == 'iss') return {err: new HTTP_Error(401, "wrong issuer"), data: null}
         if(err.claim == 'exp') return {err: new HTTP_Error(401, "token is expired"), data: null}
-        else return {err: new HTTP_Error(401, "unexpected error with token"), data: null}
+        else return {err: new HTTP_Error(401, "unexpected error with token", err), data: null}
     }
 }
 

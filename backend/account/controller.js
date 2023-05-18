@@ -93,15 +93,8 @@ async function delete_account(req, res) {
         .json({"message": "succesfully deleted your account"})
 }
 
-function get_username(req, res) {
-    return res
-        .status(200)
-        .json({"message": `welcome, ${res.locals.username}!`})
-}
-
 // Export all the functions
 module.exports.create_account = create_account
 module.exports.change_password = change_password
 module.exports.delete_account = delete_account
 module.exports.token = token
-module.exports.get_username = get_username

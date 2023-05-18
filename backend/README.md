@@ -13,6 +13,7 @@ Backend server hosting the API
 - SERVER_HOST: ip of the API server
 - SERVER_PORT: port of the API server
 - TEST: 1 for running in test environment (local memory), 0 for running using the database
+- TEST_LOGS: 1 for some extra logs during tests, 0 for less logs
 
 ## Testing
 - npm run unit-test: unit test (internal server tests)

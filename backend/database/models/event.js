@@ -50,8 +50,14 @@ const EventModel = {
     Teams: {
         type: DataTypes.STRING(2000)
     },
+    Draft: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+    },
     Public: {
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
         allowNull: false
     }
 }

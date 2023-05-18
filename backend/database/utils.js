@@ -4,9 +4,8 @@ async function init_db() {
     try {
         // Connect the to database server
         await sequelize.authenticate()
-        console.log('successfully connected to database server')
     } catch (error) {
-        console.error('could not connect to database: ', error)
+        return Promise.reject(error)
     }
 
     // Load environment variables
@@ -25,8 +24,12 @@ async function init_db() {
     if(process.env.TEST == 1) reset = true
 
     // Sync all models at the same time
-    await sequelize.sync({force: reset})  // force=true will delete all old tables with the same name
-    console.log('successfully synced all tables')
+    try {
+        await sequelize.sync({force: reset})  // force=true will delete all old tables with the same name
+    } catch (error) {
+        return Promise.reject(error)
+    }
+    return Promise.resolve('finished database initialization')
 }
 
 async function delete_event(eventID) {

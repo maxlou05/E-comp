@@ -32,15 +32,11 @@ async function checkPassword(req, res, next) {
     }
 
     // Query for the user
-    const users = await User.findAll({
-        where: {
-            Username: username
-        }
-    })
+    const user = await User.findByPk(username)
     // Check if the requested user does not exist
-    if (users.length == 0) next(new HTTP_Error(401, "this username doesn't exist"))
+    if (!user) next(new HTTP_Error(406, "this username doesn't exist"))
     // Check if the password was correct
-    else if (users[0].HashedPassword != hashed_password) next(new HTTP_Error(401, "incorrect password"))
+    else if (user.HashedPassword != hashed_password) next(new HTTP_Error(401, "incorrect password"))
     // If password is correct, then continue without errors
     else {
         // In case the username wasn't given from the token, save it now
@@ -56,9 +52,12 @@ function HTTPErrorHandler(err, req, res, next) {
         .status(err.status_code)
         .json({"error": err.message, "details": err.details})
     // Otherwise, return regular error message
-    return res
-        .status(err.status_code)
-        .json({"error": err.message})
+    if (err.status_code) {
+        return res
+            .status(err.status_code)
+            .json({"error": err.message})
+    }
+    throw err
 }
 
 module.exports.authenticate = authenticate
