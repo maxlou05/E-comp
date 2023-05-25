@@ -1,41 +1,46 @@
 const { DataTypes, Model } = require('sequelize')
 const sequelize = require('../connection')
-const Event = require('./event')
 
 class ActivitySet extends Model {}
 
 const ActivitySetModel = {
-    ActivitySetID: {
+    id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false
     },
-    SetName: {
+    name: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        defaultValue: 'draft activity set',
+        allowNull: false,
+        validate: {
+            len: [1, 100],
+            notEmpty: true
+        }
     },
-    SetStart: {
+    start: {
         type: DataTypes.DATE,
-        allowNull: false
+        validate: {
+            isDate: true
+        }
     },
-    SetEnd: {
+    end: {
         type: DataTypes.DATE,
-        allowNull: false
+        validate: {
+            isDate: true
+        }
     },
-    MaxSubmissions: {
+    maxSubmissions: {
         type: DataTypes.INTEGER.UNSIGNED,
-    },
-    EventID: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        references: {
-            model: Event,
-            key: 'EventID'
-        },
-        allowNull: false
+        allowNull: true,
+        validate: {
+            isInt: true,
+            min: 1  // null for infinite submissions
+        }
     }
 }
 
-ActivitySet.init(ActivitySetModel, {sequelize, modelName: 'ActivitySet', tableName: 'ActivitySets'})
+ActivitySet.init(ActivitySetModel, { sequelize, modelName: 'activitySet' })
 
 module.exports = ActivitySet

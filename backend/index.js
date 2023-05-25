@@ -8,7 +8,7 @@ require('dotenv').config({ path: './.env' })
 const app = require('./app')
 
 // Start database
-db.init()
+db.init(false)
     .then((message) => {
         console.log(message)
         // Starting server after database is started

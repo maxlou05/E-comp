@@ -1,67 +1,86 @@
 const { DataTypes, Model } = require('sequelize')
 const sequelize = require('../connection')
-const User = require('./user')
+const isBool = require('../../middleware/data_validation').isBool
 
 class Event extends Model {}
 
 const EventModel = {
-    EventID: {
+    id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false
     },
-    Host: {
-        type: DataTypes.STRING(50),
-        references: {
-            model: User,
-            key: 'Username'
-        },
-        allowNull: false
-    },
-    EventName: {
+    name: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        defaultValue: 'draft event',
+        allowNull: false,
+        validate: {
+            len: [1, 100],
+            notEmpty: true
+        }
     },
-    EventDescription: {
-        type: DataTypes.STRING(500)
+    description: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+        validate: {
+            len: [0, 500]
+        }
     },
-    EventIcon: {
+    icon: {
         type: DataTypes.BLOB('medium')
     },
-    EventStart: {
+    start: {
         type: DataTypes.DATE,
-        allowNull: false
+        validate: {
+            isDate: true
+        }
     },
-    EventEnd: {
+    end: {
         type: DataTypes.DATE,
-        allowNull: false
+        validate: {
+            isDate: true
+        }
     },
-    ResultsDate: {
-        type: DataTypes.DATE
+    result: {
+        type: DataTypes.DATE,
+        validate: {
+            isDate: true
+        }
     },
-    Announcement: {
-        type: DataTypes.STRING(250)
+    announcement: {
+        type: DataTypes.STRING(250),
+        allowNull: true,
+        validate: {
+            len: [0, 250]
+        }
     },
-    Team: {
+    teamSize: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+        validate: {
+            isInt: true,
+            min: 1  // 1 for infinite size teams, null for solo (no teams)
+        }
+    },
+    draft: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        defaultValue: true,
+        allowNull: false,
+        validate: {
+            isBool
+        }
     },
-    Teams: {
-        type: DataTypes.STRING(2000)
-    },
-    Draft: {
+    public: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        allowNull: false
-    },
-    Public: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            isBool
+        }
     }
 }
 
-Event.init(EventModel, {sequelize, modelName: 'Event', tableName: 'Events'})
+Event.init(EventModel, { sequelize, modelName: 'event' })
 
 module.exports = Event

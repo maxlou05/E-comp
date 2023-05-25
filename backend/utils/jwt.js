@@ -7,7 +7,7 @@ config({ path: '../.env'})
 const secret = new TextEncoder().encode(process.env.JWK)
 
 // Create a token, default expiration is in 30 minutes
-async function create_token(body, time="30min") {
+async function create_token(body, time='30min') {
     return await new jose.SignJWT(body)
         .setProtectedHeader({alg: process.env.JWT_ALG})
         .setIssuedAt()
@@ -26,9 +26,9 @@ async function verify_token(jwt) {
     }
     catch (err) {
         // catch any errors if there are 
-        if(err.claim == 'iss') return {err: new HTTP_Error(401, "wrong issuer"), data: null}
-        if(err.claim == 'exp') return {err: new HTTP_Error(401, "token is expired"), data: null}
-        else return {err: new HTTP_Error(401, "unexpected error with token", err), data: null}
+        if(err.claim == 'iss') return {err: new HTTP_Error(401, 'wrong issuer'), data: null}
+        if(err.claim == 'exp') return {err: new HTTP_Error(401, 'token is expired'), data: null}
+        else return {err: new HTTP_Error(401, 'invalid token', err), data: null}
     }
 }
 

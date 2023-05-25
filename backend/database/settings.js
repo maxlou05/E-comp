@@ -10,7 +10,7 @@ const production = {
     define: {
         timestamps: false  // This disables auto timestamps created by Sequelize on all tables
     },
-    logging: process.env.TEST_LOGS == 1 ? true : false  // This enables/disables logging. true logs all database queries to console.log
+    logging: process.env.TEST_LOGS >= 2 ? true : false  // This enables/disables logging. true logs all database queries to console.log
 }
 
 const test = {
@@ -19,7 +19,7 @@ const test = {
     define: {
         timestamps: false
     },
-    logging: process.env.TEST_LOGS == 1 ? true : false
+    logging: process.env.TEST_LOGS >= 2 ? true : false
 }
 
 module.exports.production = production

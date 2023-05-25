@@ -1,6 +1,6 @@
 const express = require('express')
 const db = require('./database/utils')
-const middleware = require('./utils/middleware')
+const errHandler = require('./middleware/error_handler')
 
 // Create the express app
 const app = express()
@@ -16,11 +16,17 @@ app.use(jsonParser)
 
 // Import the routers
 const accountRouter = require('./account/route')
+const hostRouter = require('./host/route')
+const participantRouter = require('./participants/route')
+const eventRouter = require('./events/route')
 
 // Mount the account router onto the path /account
 app.use('/account', accountRouter)
+app.use('/host', hostRouter)
+app.use('/participant', participantRouter)
+app.use('/events', eventRouter)
 
 // Error handling (this goes last)
-app.use(middleware.HTTPErrorHandler)
+app.use(errHandler.HTTPErrorHandler)
 
 module.exports = app

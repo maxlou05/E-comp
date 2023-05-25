@@ -1,7 +1,19 @@
 {
-    "user": {
+    "admin": {
         "username":"admin",
         "password":"adminpw"
     },
-    "new_password":"newadminpw"
+    "new_password":"newadminpw",
+    "user1": {
+        "username":"user1",
+        "password":"user1pw"
+    },
+    "user2": {
+        "username":"user2",
+        "password":"user2pw"
+    },
+    "user3": {
+        "username":"user3",
+        "password":"user3pw"
+    }
 }

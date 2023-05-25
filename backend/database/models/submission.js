@@ -1,62 +1,55 @@
 const { DataTypes, Model } = require('sequelize')
 const sequelize = require('../connection')
-const Activity = require('./activity')
-const User = require('./user')
+const isBool = require('../../middleware/data_validation').isBool
 
 class Submission extends Model {}
 
 const SubmissionModel = {
-    SubmissionID: {
+    id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
     },
-    ActivityID: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-        references: {
-            model: Activity,
-            key: 'ActivityID'
-        }
-    },
-    User: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'Username'
-        }
-    },
-    Team: {
-        type: DataTypes.STRING(50)
-    },
-    SubmittedAt: {
+    submittedAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
     },
-    InputType: {
-        type: DataTypes.ENUM('num', 'str', 'pdf', 'jpg', 'png'),
-        allowNull: false
+    fileType: {
+        type: DataTypes.ENUM('pdf', 'jpg', 'png'),
+        allowNull: false,
+        validate: {
+            isIn: [['pdf', 'jpg', 'png']]
+        }
     },
-    NumSubmission: {
-        type: DataTypes.DECIMAL(20, 10)
+    answer: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        validate: {
+            len: [1, 100],
+            notEmpty: true
+        }
     },
-    StrSubmission: {
-        type: DataTypes.STRING(500)
-    },
-    FileSubmission: {
+    file: {
         type: DataTypes.BLOB('medium')
     },
-    Mark: {
-        type: DataTypes.INTEGER
+    mark: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
+        validate: {
+            isInt: true
+        }
     },
-    Graded: {
+    graded: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
+        allowNull: false,
+        validate: {
+            isBool
+        }
     }
 }
 
-Submission.init(SubmissionModel, {sequelize, modelName: 'Submission', tableName: 'Submissions'})
+Submission.init(SubmissionModel, { sequelize, modelName: 'submission' })
 
 module.exports = Submission

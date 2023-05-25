@@ -18,9 +18,9 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     before('init db', async () => {
         try {
             let message = await db.init()
-            if(process.env.TEST_LOGS == 1) console.log(message)
-        } catch (error) {
-            throw error
+            if(process.env.TEST_LOGS >= 1) console.log(message)
+        } catch (err) {
+            throw err
         }
     })
 
@@ -28,12 +28,12 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should create a new account', (done) => {
         agent.put('/account')
             .set('Content-Type', 'application/json')
-            .send(user_data.user)
-            .expect('Content-Type', /json/)  // The /json/ just means of type json
+            .send(user_data.admin)
+            .expect('Content-Type', /json/)  // /json/ is a regexp for anything with 'json' in it
             .expect(201)  // Expect the status code to be 201
             // At the end, must call done() to indicate to mocha that this test is completed
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
@@ -44,11 +44,11 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should obtain a token', (done) => {
         agent.post('/account/login')
             .set('Content-Type', 'application/x-www-form-urlencoded')
-            .send(user_data.user)
+            .send(user_data.admin)
             .expect('Content-Type', /json/)
             .expect(200)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 token = res.body.access_token  // Save the token for later
                 return done()
@@ -60,26 +60,26 @@ describe('Exercising CRUD operations and authentication on users table', () => {
         agent.post('/account')
             .set('Content-Type', 'application/json')
             .set('Authorization', 'wrong token')
-            .send({'password': user_data.user.password})
+            .send({'password': user_data.admin.password})
             .expect('Content-Type', /json/)
             .expect(401)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
     })
-    console.log(token)
+
     // Change the password
     it('should change the password', (done) => {
         agent.post('/account')
             .set('Content-Type', 'application/json')
             .set('Authorization', token)
-            .send({'password': user_data.user.password, 'new_password': user_data.new_password})
+            .send({'password': user_data.admin.password, 'new_password': user_data.new_password})
             .expect('Content-Type', /json/)
             .expect(201)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
@@ -89,11 +89,11 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should return password error', (done) => {
         agent.post('/account/login')
             .set('Content-Type', 'application/json')
-            .send(user_data.user)
+            .send(user_data.admin)
             .expect('Content-Type', /json/)
             .expect(401)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
@@ -103,13 +103,13 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should obtain a new token', (done) => {
         agent.post('/account/login')
             .set('Content-Type', 'application/json')
-            .send({'username': user_data.user.username, 'password': user_data.new_password})
+            .send({'username': user_data.admin.username, 'password': user_data.new_password})
             .expect('Content-Type', /json/)
             .expect(200)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
-                // token = res.body.access_token
+                // token = res.body.access_token  // Note that not updating the token still works because 30 mins has not passed yet
                 return done()
             })
     })
@@ -118,11 +118,11 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should return duplicate user error', (done) => {
         agent.put('/account')
             .set('Content-Type', 'application/json')
-            .send(user_data.user)
+            .send(user_data.admin)
             .expect('Content-Type', /json/)
             .expect(406)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
@@ -137,7 +137,7 @@ describe('Exercising CRUD operations and authentication on users table', () => {
             .expect('Content-Type', /json/)
             .expect(200)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
@@ -147,11 +147,11 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should return user does not exist error', (done) => {
         agent.post('/account/login')
             .set('Content-Type', 'application/json')
-            .send(user_data.user)
+            .send(user_data.admin)
             .expect('Content-Type', /json/)
             .expect(406)
             .end((err, res) => {
-                if(process.env.TEST_LOGS == 1) console.log('response: ', res.body)
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
                 return done()
             })
