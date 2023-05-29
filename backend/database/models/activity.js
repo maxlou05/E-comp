@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize')
 const sequelize = require('../connection')
-const HTTP_Error = require('../../utils/HTTP_Error')
+const HttpError = require('../../utils/HttpError')
 
 class Activity extends Model {}
 
@@ -31,13 +31,13 @@ const ActivityModel = {
             isIn: [['num', 'str', 'file']],
             grading(value) {
                 if(this.getDataValue('gradingType') == 'points') {
-                    if(value != 'num') throw new HTTP_Error(406, 'grading type points is only supported with input type num')
+                    if(value != 'num') throw new HttpError(406, 'grading type points is only supported with input type num')
                 }
                 else if(this.getDataValue('gradingType') == 'answer') {
-                    if(value != 'str') throw new HTTP_Error(406, 'grading type answer is only supported with input type str, please save numbers as strings')
+                    if(value != 'str') throw new HttpError(406, 'grading type answer is only supported with input type str, please save numbers as strings')
                 }
                 else if(this.getDataValue('gradingType') == 'judge') {
-                    if(value == 'num') throw new HTTP_Error(406, 'grading type judge is not supported with input type num')
+                    if(value == 'num') throw new HttpError(406, 'grading type judge is not supported with input type num')
                 }
             }
         }

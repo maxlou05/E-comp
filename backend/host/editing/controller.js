@@ -1,9 +1,10 @@
-const Event = require('../../database/models/event')
-const HTTP_Error = require('../../utils/HTTP_Error')
+const HttpError = require('../../utils/HttpError')
+
+
 
 async function edit_event(req, res, next) {
     const event = req.locals.event
-    if(!event) return next(new HTTP_Error(404, `event with id ${req.params.eventID} does not exist`))
+    if(!event) return next(new HttpError(404, `event with id ${req.params.eventID} does not exist`))
     // Anything can be edited when draft
     if(event.draft) {
         // If inputted, then edit
@@ -34,7 +35,7 @@ async function edit_event(req, res, next) {
             .status(201)
             .json({"message": "event updated"})
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 

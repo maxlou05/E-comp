@@ -1,5 +1,5 @@
 const Activity = require('../../../../database/models/activity')
-const HTTP_Error = require('../../../../utils/HTTP_Error')
+const HttpError = require('../../../../utils/HttpError')
 
 
 
@@ -15,7 +15,7 @@ async function get_activities(req, res, next) {
             .status(200)
             .json(activities)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -37,9 +37,9 @@ async function create_activity(req, res, next) {
                 .status(201)
                 .json({"message": "successfully created the activity", "id": activity.id})
         }
-        return next(new HTTP_Error(403, 'cannot edit activity after event is published'))
+        return next(new HttpError(403, 'cannot edit activity after event is published'))
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -60,7 +60,7 @@ async function edit_activity(req, res, next) {
             .json({"message": "activity updated"})
     }
 
-    return next(new HTTP_Error(403, 'cannot edit activity after event is published'))
+    return next(new HttpError(403, 'cannot edit activity after event is published'))
 }
 
 async function delete_activity(req, res, next) {

@@ -5,6 +5,8 @@ const validate = require('../middleware/data_validation')
 
 const router = express.Router()
 
+
+
 /******************* Routes ******************/
 router.get('/', auth.authenticate, controller.get_events)
 router.put('/', auth.authenticate, controller.create)

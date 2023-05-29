@@ -1,8 +1,10 @@
 const { Op, Sequelize } = require('sequelize')
 const Event = require('../database/models/event')
-const HTTP_Error = require('../utils/HTTP_Error')
+const HttpError = require('../utils/HttpError')
 const Activity = require('../database/models/activity')
 const Submission = require('../database/models/submission')
+
+
 
 /*************** Handlers **************/
 async function find_events(req, res, next) {
@@ -22,7 +24,7 @@ async function find_events(req, res, next) {
             .status(200)
             .json(events)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -48,7 +50,7 @@ async function get_teams(req, res, next) {
             .status(200)
             .json(payload)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -62,7 +64,7 @@ async function count_participants(req, res, next) {
             .status(200)
             .json(participants.num)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -90,7 +92,7 @@ async function get_current_activities(req, res, next) {
             .status(200)
             .json(activitySets[0].activities)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -139,7 +141,7 @@ async function leaderboards(req, res, next) {
                             // If not graded, just add 0 (do nothing)
                         }
                     })
-                    team_score.push({"id": a.id, "activity": a.name, "points": score})
+                    team_score.push({"id": a.id, "name": a.name, "points": score})
                 })
                 payload.push({'team': team.name, 'scores': team_score})
             })
@@ -166,7 +168,7 @@ async function leaderboards(req, res, next) {
                             // If not graded, just add 0 (do nothing)
                         }
                     })
-                    individual_scores.push({"id": a.id, "activity": a.name, "points": score})
+                    individual_scores.push({"id": a.id, "name": a.name, "points": score})
                 })
                 const username = await participant.getUser({
                     attributes: ['username']
@@ -179,7 +181,7 @@ async function leaderboards(req, res, next) {
             .status(200)
             .json(payload)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 

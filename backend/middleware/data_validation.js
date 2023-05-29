@@ -1,20 +1,22 @@
-const HTTP_Error = require('../utils/HTTP_Error')
+const HttpError = require('../utils/HttpError')
 const Activity = require('../database/models/activity')
 const Event = require('../database/models/event')
+
+
 
 async function event_publish(req, res, next) {
     const now = new Date()
     // Start date is in the future
-    if(!res.locals.event.start) return next(new HTTP_Error(406, 'event must have a start date'))
-    if(res.locals.event.start < now) return next(new HTTP_Error(406, 'cannot start the event in the past'))
+    if(!res.locals.event.start) return next(new HttpError(406, 'event must have a start date'))
+    if(res.locals.event.start < now) return next(new HttpError(406, 'cannot start the event in the past'))
 
     // End date is after start date
-    if(!res.locals.event.end) return next(new HTTP_Error(406, 'event must have an end date'))
-    if(res.locals.event.end < res.locals.event.start) return next(new HTTP_Error(406, 'cannot end the event before it begins'))
+    if(!res.locals.event.end) return next(new HttpError(406, 'event must have an end date'))
+    if(res.locals.event.end < res.locals.event.start) return next(new HttpError(406, 'cannot end the event before it begins'))
 
     // Judge date is after end date, if there is one
     if(res.locals.event.result) {
-        if(res.locals.event.result < res.locals.event.end) return next(new HTTP_Error(406, 'cannot give results before event ends'))
+        if(res.locals.event.result < res.locals.event.end) return next(new HttpError(406, 'cannot give results before event ends'))
     }
 
     try {
@@ -26,33 +28,33 @@ async function event_publish(req, res, next) {
             ]
         })
         // Needs activities
-        if(activitysets.length == 0) return next(new HTTP_Error(406, 'need to have at least 1 activity set'))
+        if(activitysets.length == 0) return next(new HttpError(406, 'need to have at least 1 activity set'))
         activitysets.forEach((set) => {
-            if(set.activities.length == 0) return next(new HTTP_Error(406, `need to have at least 1 activity in activity set ${set.name}`, {"id": set.id}))
+            if(set.activities.length == 0) return next(new HttpError(406, `need to have at least 1 activity in activity set ${set.name}`, {"id": set.id}))
             // Validate the activities
             set.activities.forEach((activity) => {
                 // Make sure that all the answer activities have an answer key to auto grade
                 if(activity.gradingType == 'answer') {
-                    if(!activity.answers || activity.answers.length == 0) return next(new HTTP_Error(406, `the activity ${activity.name} needs an answer`, {"id": activity.id}))
+                    if(!activity.answers || activity.answers.length == 0) return next(new HttpError(406, `the activity ${activity.name} needs an answer`, {"id": activity.id}))
                 }
             })
         })
         // ActivitySets must have start and end dates, and be in order
         for (let i = 0; i < activitysets.length; i++) {
             const set = activitysets[i];
-            if(!set.start) return next(new HTTP_Error(406, `activity set ${set.name} must have a start date`, {"id": set.id}))
-            if(!set.end) return next(new HTTP_Error(406, `activity set ${set.name} must have an end date`, {"id": set.id}))
-            if(set.end < set.start) return next(new HTTP_Error(406, `activity set ${set.name} cannot end before it begins`, {"id": set.id}))
+            if(!set.start) return next(new HttpError(406, `activity set ${set.name} must have a start date`, {"id": set.id}))
+            if(!set.end) return next(new HttpError(406, `activity set ${set.name} must have an end date`, {"id": set.id}))
+            if(set.end < set.start) return next(new HttpError(406, `activity set ${set.name} cannot end before it begins`, {"id": set.id}))
             if(i == 0) {
-                if(set.start < res.locals.event.start) return next(new HTTP_Error(406, `activity set ${set.name} cannot start before begin starts`, {"id": set.id}))
+                if(set.start < res.locals.event.start) return next(new HttpError(406, `activity set ${set.name} cannot start before begin starts`, {"id": set.id}))
             }
             else if(i < activitysets.length - 1) {
                 // Since ordered by start time, the end of each should be less than the start of the next one
-                if(set.end > activitysets[i+1].start) return next(new HTTP_Error(406, `activity set ${set.name} is running concurrently with set ${activitysets[i+1].name}`, {"ids": [set.id, activitysets[i+1].id]}))
+                if(set.end > activitysets[i+1].start) return next(new HttpError(406, `activity set ${set.name} is running concurrently with set ${activitysets[i+1].name}`, {"ids": [set.id, activitysets[i+1].id]}))
             }
         }
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error'))
+        return next(new HttpError(500, 'unexpected error'))
     }
 
     next()
@@ -60,8 +62,8 @@ async function event_publish(req, res, next) {
 
 async function isPublished(req, res, next) {
     const event = await Event.findByPk(req.params.eventID)
-    if(!event) return next(new HTTP_Error(404, `event with id ${req.params.eventID} does not exist`))
-    if(event.draft) return next(new HTTP_Error(404, `event with id ${req.params.eventID} does not exist`))
+    if(!event) return next(new HttpError(404, `event with id ${req.params.eventID} does not exist`))
+    if(event.draft) return next(new HttpError(404, `event with id ${req.params.eventID} does not exist`))
     // Save the event for later
     res.locals.event = event
     next()
@@ -73,10 +75,10 @@ function isCompleted(req, res, next) {
     if(!res.locals.event.draft) {
         // If there is a results date
         if(res.locals.event.result) {
-            if(res.locals.event.result > now) return next(new HTTP_Error(403, 'cannot delete activity set while event is happening'))
+            if(res.locals.event.result > now) return next(new HttpError(403, 'cannot delete activity set while event is happening'))
         }
         else {
-            if(res.locals.event.end > now) return next(new HTTP_Error(403, 'cannot delete activity set while event is happening'))
+            if(res.locals.event.end > now) return next(new HttpError(403, 'cannot delete activity set while event is happening'))
         }
     }
     next()
@@ -85,7 +87,7 @@ function isCompleted(req, res, next) {
 // team is an actual team
 
 function isBool(value) {
-    if(value != true && value != false) throw new HTTP_Error(406, 'must be true or false')
+    if(value != true && value != false) throw new HttpError(406, 'must be true or false')
 }
 
 module.exports.event_publish = event_publish

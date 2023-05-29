@@ -1,9 +1,10 @@
-class HTTP_Error {
+class HttpError extends Error {
     constructor(status_code, message, details=null) {
+        super(message)
+        this.name = "HttpError"
         this.status_code = status_code
-        this.message = message
         this.details = details
     }
 }
 
-module.exports = HTTP_Error
+module.exports = HttpError

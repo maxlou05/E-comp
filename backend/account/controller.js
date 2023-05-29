@@ -1,7 +1,9 @@
 const config = require('dotenv').config
 const jwt_utils = require('../utils/jwt')
-const HTTP_Error = require('../utils/HTTP_Error')
+const HttpError = require('../utils/HttpError')
 const User = require('../database/models/user')
+
+
 
 // import settings
 config({ path: '../.env'})
@@ -16,9 +18,9 @@ async function create_account(req, res, next) {
             .status(201)
             .json({"message": `successfully created your account, ${user.username}. Please login to continue`})
     } catch (err) {
-        if(err.name == 'SequelizeUniqueConstraintError') next(new HTTP_Error(406, "username already exists"))
+        if(err.name == 'SequelizeUniqueConstraintError') next(new HttpError(406, "username already exists"))
         else {
-            next(new HTTP_Error(500, "unexpected error", err))
+            next(new HttpError(500, "unexpected error", err))
         }
     }
 }
@@ -45,7 +47,7 @@ async function change_password(req, res) {
             .status(201)
             .json({"message": "succesfully changed your password"})
     } catch (err) {
-        next(new HTTP_Error(500, "unexpected error", err))
+        next(new HttpError(500, "unexpected error", err))
     }
 }
 

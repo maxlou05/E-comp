@@ -1,9 +1,10 @@
 const express = require('express')
 const controller = require('./controller')
-const auth = require('../middleware/authentication')
 const validate = require('../middleware/data_validation')
 
 const router = express.Router()
+
+
 
 /******************* Routes ******************/
 router.get('/find', controller.find_events)

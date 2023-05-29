@@ -1,6 +1,6 @@
 const jose = require('jose')
 const config = require('dotenv').config
-const HTTP_Error = require('./HTTP_Error')
+const HTTP_Error = require('./HttpError')
 
 // import settings
 config({ path: '../.env'})

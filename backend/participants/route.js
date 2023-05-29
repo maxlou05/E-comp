@@ -1,12 +1,13 @@
 const express = require('express')
 const controller = require('./controller')
 const auth = require('../middleware/authentication')
+const validate = require('../middleware/data_validation')
 
 const router = express.Router()
 
 /******************* Routes ******************/
 router.get('/events', auth.authenticate, controller.get_events)
-router.put('/join/:eventID', auth.authenticate, controller.join)
+router.put('/join/:eventID', auth.authenticate, validate.isPublished, controller.join)
 router.delete('/:participantID/leave', auth.authenticate, auth.participantBelongsToUser, controller.leave)
 router.get('/:participantID/submissions', auth.authenticate, auth.participantBelongsToUser, controller.get_submissions)
 router.get('/:participantID/submissions/activity/:activityID', auth.authenticate, auth.participantBelongsToUser, controller.get_submissions_by_activity)

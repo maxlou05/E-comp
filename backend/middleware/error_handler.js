@@ -1,4 +1,4 @@
-// Error handling middleware (all errors should be a HTTP_Error object)
+// Error handling middleware (all errors should be a HttpError object)
 function HTTPErrorHandler(err, req, res, next) {
     // If there are extra details, return those too
     if (err.details) return res

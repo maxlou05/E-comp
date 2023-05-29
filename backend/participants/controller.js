@@ -1,10 +1,11 @@
-const User = require('../database/models/user')
 const Event = require('../database/models/event')
 const Participant = require('../database/models/participant')
 const Activity = require('../database/models/activity')
 const ActivitySet = require('../database/models/activity_set')
 const Submission = require('../database/models/submission')
-const HTTP_Error = require('../utils/HTTP_Error')
+const HttpError = require('../utils/HttpError')
+const Team = require('../database/models/team')
+const { Sequelize } = require('sequelize')
 
 
 
@@ -12,6 +13,7 @@ const HTTP_Error = require('../utils/HTTP_Error')
 async function get_events(req, res, next) {
     try {
         const participants = await Participant.findAll({
+            attributes: ['id'],
             where: {
                 userUsername: res.locals.username
             },
@@ -27,20 +29,43 @@ async function get_events(req, res, next) {
             .json(participants)  // Singular 'event' because it is a one to many relationship, participant only has one event
         // [{id: participantID, event: {id: eventID, name: ...}}, {...}, ...]
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
 async function join(req, res, next) {
     try {
         // Cannot join the same event twice (event and user has to be unique as a pair)
-        const participants = await Participant.findAll({
+        const participants = await res.locals.event.getParticipants({
             where: {
-                userUsername: res.locals.username,
-                eventId: req.params.eventID
+                userUsername: res.locals.username
             }
         })
-        if(participants.length > 0) return res.status(201).json({"message": "already joined event"})
+        if(participants.length > 0) return res.status(201).json({"message": "already joined event", "id": participants[0].id})
+
+        // Cannot join a team if not a team event
+        if(res.locals.event.teamSize == 1) {
+            const participant = await Participant.create({
+                userUsername: res.locals.username,
+                eventId: req.params.eventID
+            })
+            return res
+                .status(201)
+                .json({"message": `joined event ${req.params.eventID}`, "id": participant.id})
+        }
+        
+        // Check if team exists
+        const team = await Team.findByPk(req.body.team)
+        if(!team) return next(new HttpError(404, `the team ${req.body.team} does not exist`))
+
+        // See if team already has max participants
+        const count = await team.getParticipants()
+        if(count.length < res.locals.event.teamSize) {
+            await team.createParticipant({ eventId: res.locals.event.id, teamName: req.body.team })
+        }
+        else {
+            return next(new HttpError(403, `the team ${req.body.team} is full`))
+        }
 
         const participant = await Participant.create({
             userUsername: res.locals.username,
@@ -53,7 +78,7 @@ async function join(req, res, next) {
             .json({"message": `joined event ${req.params.eventID}`, "id": participant.id})
     } catch (err) {
         // ****TODO: Find out what the foreign key mismatch error is to tell what is wrong****
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -100,14 +125,14 @@ async function my_stats(req, res, next) {
                     // If not graded, just add 0 (do nothing)
                 }
             })
-            payload.push({"id": activity.id, "activity": activity.name, "points": score})
+            payload.push({"id": activity.id, "name": activity.name, "points": score})
         })
         
         return res
             .status(200)
             .json(payload)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -119,7 +144,7 @@ async function get_submissions(req, res, next) {
             .status(200)
             .json(submissions)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -135,7 +160,7 @@ async function get_submissions_by_activity(req, res, next) {
             .status(200)
             .json(submissions)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -144,13 +169,13 @@ async function get_team(req, res, next) {
         const team = await res.locals.participant.getTeam({
             attributes: ['name']
         })
-        if(!team) return next(new HTTP_Error(404, 'you have not joined any team'))
+        if(!team) return next(new HttpError(404, 'you have not joined any team'))
         
         return res
             .status(200)
             .json({"team": team.name})
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
@@ -199,7 +224,7 @@ async function get_team_stats(req, res, next) {
                         // If not graded, just add 0 (do nothing)
                     }
                 })
-                user_data.push({"activity": activity.name, "points": score})
+                user_data.push({"id": activity.id, "activity": activity.name, "points": score})
             })
             // Find the username of this participant
             const user = await participant.getUser({
@@ -212,49 +237,51 @@ async function get_team_stats(req, res, next) {
             .status(200)
             .json(payload)
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
 async function submit(req, res, next) {
     try {
         // Check if the activityID exists in the event
-        const event = res.locals.participant.getEvent({
+        const event = await res.locals.participant.getEvent({
             include: {
                 model: ActivitySet,
                 attributes: ['id'],
                 include: {
                     model: Activity,
-                    attributes: ['id', 'gradingType', 'pointValue', 'answers']
-                }
+                    attributes: ['id', 'gradingType', 'pointValue', 'answers'],
+                    include: [
+                        // SQL subquery to add a counter column 'submissionCount' from a different table to the results
+                        [Sequelize.literal(`(SELECT COUNT(*) FROM Submissions WHERE Submissions.participantId = ${res.locals.participant.id} AND Submissions.activityId = activity.id)`), 'submissionCount']
+                    ],
+                    where: {
+                        activityId: req.params.activityID
+                    }
+                },
+                required: true  // Skips any events without activity sets
             }
         })
-        let included = false
-        let activity
-        event.activitySets.forEach((set) => {
-            set.forEach((a) => {
-                if(a.id == req.params.activityID) {
-                    included = true
-                    activity
-                    return
-                }
-            })
-            if(included) return
-        })
-        if(!included) return next(new HTTP_Error(404, `the activity with id ${req.params.activityID} does not exist`))
+        if(!event) return next(new HttpError(404, `the activity with id ${req.params.activityID} does not exist`))
+
+        // Make sure within submission limit
+        if(event.activitySets[0].maxSubmissions) {
+            if(event.activitySets.activities[0].submissionCount >= event.activitySets[0].maxSubmissions) return next(new HttpError(403, 'already reached max submission limit'))
+        }
 
         // Apply automatic grading system
-        if(activity.gradingType == 'points') {
+        if(event.activitySets[0].activities[0].gradingType == 'points') {
             await res.locals.participant.createSubmission({
-                mark: activity.pointValue * req.body.answer,
+                mark: event.activitySets[0].activities[0].pointValue * req.body.answer,
                 graded: true
             })
         }
-        else if(activity.gradingType == 'answer') {
+        else if(event.activitySets[0].activities[0].gradingType == 'answer') {
             // Check answer against answer key
             let correct = false
-            activity.answers.forEach((ans) => {
+            event.activitySets[0].activities[0].answers.forEach((ans) => {
                 if(ans == req.body.answer) {
+                    // As long as it matches one, then exit the loop
                     correct = true
                     return
                 }
@@ -263,7 +290,7 @@ async function submit(req, res, next) {
             if(correct) {
                 await res.locals.participant.createSubmission({
                     answer: req.body.answer,
-                    mark: activity.pointValue,
+                    mark: event.activitySets[0].activities[0].pointValue,
                     graded: true
                 })
             }
@@ -275,9 +302,12 @@ async function submit(req, res, next) {
                 })
             }
         }
-        else {  // Manual judging
+        // Manual judging
+        else {
+            // If giving a file, need to specify a file type
+            if(req.body.file && !req.body.fileType) return next(new HttpError(406, 'must specify a file type'))
             await res.locals.participant.createSubmission({
-                filyType: req.body.fileType,
+                fileType: req.body.fileType,
                 answer: req.body.answer,
                 file: req.body.file
             })
@@ -287,7 +317,7 @@ async function submit(req, res, next) {
             .status(201)
             .json({"message": "activity submitted"})
     } catch (err) {
-        return next(new HTTP_Error(500, 'unexpected error', err))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 

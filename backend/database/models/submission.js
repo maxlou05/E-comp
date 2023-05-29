@@ -17,7 +17,6 @@ const SubmissionModel = {
     },
     fileType: {
         type: DataTypes.ENUM('pdf', 'jpg', 'png'),
-        allowNull: false,
         validate: {
             isIn: [['pdf', 'jpg', 'png']]
         }
@@ -36,6 +35,7 @@ const SubmissionModel = {
     mark: {
         type: DataTypes.INTEGER,
         defaultValue: null,
+        allowNull: true,
         validate: {
             isInt: true
         }
