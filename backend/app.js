@@ -1,5 +1,4 @@
 const express = require('express')
-const db = require('./database/utils')
 const errHandler = require('./middleware/error_handler')
 
 // Load settings
@@ -20,6 +19,9 @@ app.use(jsonParser)
 // Allow CORS if running frontend and backend the same server
 app.use((req, res, next) => {
     res.set('Access-Control-Allow-Origin', process.env.CORS)
+    res.set('Access-Control-Allow-Credentials', '*')
+    res.set('Access-Control-Allow-Methods', '*')
+    res.set('Access-Control-Allow-Headers', '*')
     next()
 })
 
