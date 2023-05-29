@@ -3,7 +3,7 @@ const db = require('./database/utils')
 const errHandler = require('./middleware/error_handler')
 
 // Load settings
-require('dotenv').config( path: {'./.env'} )
+require('dotenv').config( { path: './.env' } )
 
 // Create the express app
 const app = express()
@@ -20,6 +20,7 @@ app.use(jsonParser)
 // Allow CORS if running frontend and backend the same server
 app.use((req, res, next) => {
     res.set('Access-Control-Allow-Origin', process.env.CORS)
+    next()
 })
 
 // Import the routers
