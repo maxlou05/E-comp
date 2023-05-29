@@ -4,6 +4,7 @@
   "description": "E-comp backend API server",
   "main": "server.js",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jose": "^4.13.1",

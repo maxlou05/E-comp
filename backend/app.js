@@ -1,8 +1,8 @@
 const express = require('express')
 const errHandler = require('./middleware/error_handler')
 
-// Load settings
-require('dotenv').config( { path: './.env' } )
+// Load CORS middlware, accept everything
+const cors = require('cors')
 
 // Create the express app
 const app = express()
@@ -17,12 +17,7 @@ app.use(urlencodedParser)
 app.use(jsonParser)
 
 // Allow CORS if running frontend and backend the same server
-app.use((req, res, next) => {
-    res.set('Access-Control-Allow-Origin', process.env.CORS)
-    res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE')
-    res.set('Access-Control-Allow-Headers', 'Authorization, Content-type')
-    next()
-})
+app.use(cors())
 
 // Import the routers
 const accountRouter = require('./account/route')
