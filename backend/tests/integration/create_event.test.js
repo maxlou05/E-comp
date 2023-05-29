@@ -13,10 +13,14 @@ require('dotenv').config({ path: './.env' })
 // Import test data
 const user_data = require('../mock_data/users.json')
 const event_data = require('../mock_data/events.json')
+const set_data = require('../mock_data/activitySets.json')
+const activity_data = require('../mock_data/activities.json')
 
-describe('Exercising CRUD operations and authentication on events table', () => {
+describe('Exercising CRUD operations and authentication on events', () => {
     let token
     let eventID
+    let setID
+    let activityID
 
     // Before doing the tests, must intialize/setup the database
     before('init db', async () => {
@@ -39,6 +43,7 @@ describe('Exercising CRUD operations and authentication on events table', () => 
         token = res.body.access_token
     })
 
+    // Creating event and stuff
     it('should create an event draft', (done) => {
         agent.put('/host')
             .set('Content-type', 'application/json')    
@@ -79,4 +84,314 @@ describe('Exercising CRUD operations and authentication on events table', () => 
                 done()
             })
     })
+
+    it('should delete the event', (done) => {
+        agent.delete(`/host/${eventID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return all created events', (done) => {
+        agent.get('/host')
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create an event draft', (done) => {
+        agent.put('/host')
+            .set('Content-type', 'application/json')    
+            .set('Authorization', token)
+            .send(event_data.empty_event)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                eventID = res.body.id
+                done()
+            })
+    })
+
+    it('should edit into a completed event (without any activity sets or activities)', (done) => {
+        agent.post(`/host/${eventID}/edit`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(event_data.complete_event)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    // Add activity sets
+    it('should create activity set 1', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(set_data.set1)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create activity set 2', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send({})
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                setID = res.body.id
+                done()
+            })
+    })
+
+    it('should delete activity set', (done) => {
+        agent.delete(`/host/${eventID}/edit/activitySets/${setID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return activity sets', (done) => {
+        agent.get(`/host/${eventID}/edit/activitySets/`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create activity set 3', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets/${setID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send({})
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                setID = res.body.id
+                done()
+            })
+    })
+
+    it('should edit activity set 3', (done) => {
+        agent.post(`/host/${eventID}/edit/activitySets/${setID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(set_data.set2)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return activity sets', (done) => {
+        agent.get(`/host/${eventID}/edit/activitySets/`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    // Add activities
+    it('should create activity 1', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(activity_data.activity1)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create activity 2', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send({})
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                activityID = res.body.id
+                done()
+            })
+    })
+
+    it('should delete activity', (done) => {
+        agent.delete(`/host/${eventID}/edit/activitySets/${setID}/activities/${activityID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return activity sets', (done) => {
+        agent.get(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create activity 3', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send({})
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                setID = res.body.id
+                done()
+            })
+    })
+
+    it('should edit activity 3', (done) => {
+        agent.post(`/host/${eventID}/edit/activitySets/${setID}/activities/${activityID}`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(set_data.set2)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should create activity 4', (done) => {
+        agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .send(activity_data.activity3)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return activities', (done) => {
+        agent.get(`/host/${eventID}/edit/activitySets/${setID}/activities`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    // Publish the event
+    it('should publish', (done) => {
+        agent.post(`/host/${eventID}/publish`)
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should return all created events', (done) => {
+        agent.get('/host')
+            .set('Content-type', 'application/json')
+            .set('Authorization', token)
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    it('should show up under public events', (done) => {
+        agent.get('/events/find')
+            .set('Content-type', 'application/json')
+            .expect('Content-type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if(err) return done(err)
+                done()
+            })
+    })
+
+    // User joins event
+
+
+    // User submits to all 3 activities
+
 })

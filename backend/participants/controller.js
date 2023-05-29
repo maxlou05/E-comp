@@ -5,7 +5,7 @@ const ActivitySet = require('../database/models/activity_set')
 const Submission = require('../database/models/submission')
 const HttpError = require('../utils/HttpError')
 const Team = require('../database/models/team')
-const { Sequelize } = require('sequelize')
+const { Sequelize, Op } = require('sequelize')
 
 
 
@@ -98,6 +98,12 @@ async function my_stats(req, res, next) {
             include: {
                 model: ActivitySet,
                 attributes: ['id'],
+                // Only already activity sets that already happened
+                where: {
+                    start: {
+                        [Op.gt]: new Date()
+                    }
+                },
                 include: {
                     model: Activity,
                     attributes: ['id', 'name']
@@ -248,6 +254,15 @@ async function submit(req, res, next) {
             include: {
                 model: ActivitySet,
                 attributes: ['id'],
+                // Only on current activity set
+                where: {
+                    start: {
+                        [Op.gt]: new Date()
+                    },
+                    end: {
+                        [Op.lt]: new Date()
+                    }
+                },
                 include: {
                     model: Activity,
                     attributes: ['id', 'gradingType', 'pointValue', 'answers'],

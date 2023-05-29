@@ -20,7 +20,7 @@ async function event_publish(req, res, next) {
     }
 
     try {
-        const activitysets = await res.locals.event.getActivitySets({
+        const activitySets = await res.locals.event.getActivitySets({
             include: Activity,
             // Order the activity sets by start dates from least (earliest) to greatest (latest)
             order: [
@@ -28,8 +28,8 @@ async function event_publish(req, res, next) {
             ]
         })
         // Needs activities
-        if(activitysets.length == 0) return next(new HttpError(406, 'need to have at least 1 activity set'))
-        activitysets.forEach((set) => {
+        if(activitySets.length == 0) return next(new HttpError(406, 'need to have at least 1 activity set'))
+        activitySets.forEach((set) => {
             if(set.activities.length == 0) return next(new HttpError(406, `need to have at least 1 activity in activity set ${set.name}`, {"id": set.id}))
             // Validate the activities
             set.activities.forEach((activity) => {
@@ -40,17 +40,22 @@ async function event_publish(req, res, next) {
             })
         })
         // ActivitySets must have start and end dates, and be in order
-        for (let i = 0; i < activitysets.length; i++) {
-            const set = activitysets[i];
+        for (let i = 0; i < activitySets.length; i++) {
+            const set = activitySets[i];
             if(!set.start) return next(new HttpError(406, `activity set ${set.name} must have a start date`, {"id": set.id}))
             if(!set.end) return next(new HttpError(406, `activity set ${set.name} must have an end date`, {"id": set.id}))
             if(set.end < set.start) return next(new HttpError(406, `activity set ${set.name} cannot end before it begins`, {"id": set.id}))
             if(i == 0) {
-                if(set.start < res.locals.event.start) return next(new HttpError(406, `activity set ${set.name} cannot start before begin starts`, {"id": set.id}))
+                // First one should start after the event starts
+                if(set.start < res.locals.event.start) return next(new HttpError(406, `activity set ${set.name} cannot start before event starts`, {"id": set.id}))
             }
-            else if(i < activitysets.length - 1) {
+            else if(i < activitySets.length - 1) {
                 // Since ordered by start time, the end of each should be less than the start of the next one
-                if(set.end > activitysets[i+1].start) return next(new HttpError(406, `activity set ${set.name} is running concurrently with set ${activitysets[i+1].name}`, {"ids": [set.id, activitysets[i+1].id]}))
+                if(set.end > activitySets[i+1].start) return next(new HttpError(406, `activity set ${set.name} is running concurrently with set ${activitySets[i+1].name}`, {"ids": [set.id, activitySets[i+1].id]}))
+            }
+            if(i == activitySets.length - 1) {
+                // Last one should end before event ends
+                if(set.end > res.locals.event.end) return next(new HttpError(406, `activity set ${set.name} cannot end after event ends`, {"id": set.id}))
             }
         }
     } catch (err) {

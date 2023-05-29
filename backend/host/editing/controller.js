@@ -3,7 +3,7 @@ const HttpError = require('../../utils/HttpError')
 
 
 async function edit_event(req, res, next) {
-    const event = req.locals.event
+    const event = res.locals.event
     if(!event) return next(new HttpError(404, `event with id ${req.params.eventID} does not exist`))
     // Anything can be edited when draft
     if(event.draft) {

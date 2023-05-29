@@ -1,15 +1,15 @@
 {
     "empty_event": {},
     "draft_event": {
-        "eventName": "Fitness contest",
+        "name": "Fitness contest",
         "team": true,
         "teams": ["shanghai sharks", "beijing ducks"],
         "public": true
     },
     "complete_event": {
-        "eventName": "Eating contest",
-        "eventStart": "2024-05-18T00:00:00",
-        "eventEnd": "2024-05-20T00:00:00",
+        "name": "Eating contest",
+        "start": "2024-05-18T00:00:00",
+        "end": "2024-05-20T00:00:00",
         "team": true,
         "teams": ["burger bois", "hotdog hornets"],
         "public": true

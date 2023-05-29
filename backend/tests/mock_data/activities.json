@@ -1,0 +1,23 @@
+{
+    "activity1": {
+        "name": "fav food",
+        "description": "what's ur fav food",
+        "inputType": "str",
+        "gradingType": "answer",
+        "answers": ["hamburger"]
+    },
+    "activity2": {
+        "name": "pushups",
+        "description": "how many pushups",
+        "inputType": "num",
+        "gradingType": "points",
+        "pointValue": 2
+    },
+    "activity3": {
+        "name": "picture",
+        "description": "cool pic",
+        "inputType": "file",
+        "gradingType": "judge",
+        "pointValue": 10
+    }
+}
