@@ -1,0 +1,66 @@
+.grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  min-width: 100vw;
+  min-height: 10vh;
+ }
+
+.container{
+    min-height: 20vh;
+    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    column-gap: 8vw;
+}
+
+.container title{
+    size:15;
+}
+
+.EventBar{
+  background:null;
+  color: black;
+  --h: 24;
+  --w: 24;
+  min-height: calc(var(--h)*1vw);
+  max-height: calc(var(--h)*1vw);
+  min-width: calc(var(--w)*1vw);
+  max-width: calc(var(--w)*1vw);
+  font-family: "Baskerville",serif;
+  display: flex;
+  flex-flow:column wrap;
+  position: relative;
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: calc(var(--h)*1vh);
+  overflow: hidden;
+  flex-basis: 45%;
+  row-gap: 0px;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+Image.EventIcon{
+
+}
+
+.EventBarTitle{
+  padding-left:5vw;
+}
+
+.EventBar .container{
+  min-height: 4vw;
+  max-height: 6vw;
+  padding-left: 5vw;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: flex-start;
+  overflow: hidden;
+}
+

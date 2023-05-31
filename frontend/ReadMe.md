@@ -1,1 +1,0 @@
-E-Comp front end 

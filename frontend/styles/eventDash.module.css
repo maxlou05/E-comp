@@ -1,0 +1,29 @@
+.rowOne {
+  justify-content:flex-end;
+  align-items:flex-end;
+  padding-bottom:0;
+  margin-bottom:-12vh;
+  margin-right: 0vw;
+  column-gap: 10vw;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  max-width: 85vw;
+  max-height: 45vh;
+}
+
+.rowTwo {
+  justify-content:flex-start;
+  align-items:center;
+  padding-top:0;
+  margin-top:-8vh;
+  margin-left: 10vw;
+  column-gap: 10vw;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  max-width: 75vw;
+  max-height: 45vh;
+}
