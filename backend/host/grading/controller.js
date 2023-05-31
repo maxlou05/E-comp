@@ -1,4 +1,3 @@
-const { Sequelize } = require('sequelize')
 const Activity = require('../../database/models/activity')
 const HttpError = require('../../utils/HttpError')
 

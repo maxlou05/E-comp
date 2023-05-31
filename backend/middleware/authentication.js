@@ -114,6 +114,7 @@ async function participantBelongsToEvent(req, res, next) {
 
 async function submissionBelongsToEvent(req, res, next) {
     const submission = await Submission.findByPk(req.params.submissionID)
+    if(!submission) return next(new HttpError(404, `the submission with id '${req.params.submissionID}' does not exist`))
     const activity = await Activity.findByPk(submission.activityId)
     const activitySet = await ActivitySet.findByPk(activity.activitySetId)
     if(activitySet.eventId != res.locals.event.id) return next(new HttpError(404, `the submission with id '${req.params.submissionID}' does not exist`))

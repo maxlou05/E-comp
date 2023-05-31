@@ -295,15 +295,16 @@ async function submit(req, res, next) {
         if(!event) return next(new HttpError(404, `the activity with id ${req.params.activityID} does not exist`))
         // There should only be 1 by publishing constraints
         const activitySets = await event.getActivitySets({
-            // where: {
-            //     start: {
-            //         [Op.gt]: new Date()
-            //     },
-            //     end: {
-            //         [Op.lt]: new Date()
-            //     }
-            // }
+            where: {
+                start: {
+                    [Op.gt]: new Date()
+                },
+                end: {
+                    [Op.lt]: new Date()
+                }
+            }
         })
+        if(activitySets.length == 0) return next(new HttpError(403, 'there are currently no activities to submit to'))
         // There should only be 1 because search by primary key
         const activities = await activitySets[0].getActivities({
             where: {
@@ -323,8 +324,14 @@ async function submit(req, res, next) {
 
         // Apply automatic grading system
         if(activities[0].gradingType == 'points') {
+            let ans
+            try {
+                ans = parseInt(req.body.answer)
+            } catch (err) {
+                return next(new HttpError(406, 'the answer provided was not an integer'))
+            }
             await res.locals.participant.createSubmission({
-                mark: parseInt(event.activitySets[0].activities[0].pointValue) * req.body.answer,
+                mark: ans * activities[0].pointValue,
                 graded: true
             })
         }
