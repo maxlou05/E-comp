@@ -59,7 +59,7 @@ async function event_publish(req, res, next) {
             }
         }
     } catch (err) {
-        return next(new HttpError(500, 'unexpected error'))
+        return next(new HttpError(500, 'unexpected error', err))
     }
 
     next()
@@ -89,13 +89,6 @@ function isCompleted(req, res, next) {
     next()
 }
 
-// team is an actual team
-
-function isBool(value) {
-    if(value != true && value != false) throw new HttpError(406, 'must be true or false')
-}
-
 module.exports.event_publish = event_publish
 module.exports.isPublished = isPublished
 module.exports.isCompleted = isCompleted
-module.exports.isBool = isBool

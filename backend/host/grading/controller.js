@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize')
 const Activity = require('../../database/models/activity')
-const Submission = require('../../database/models/submission')
 const HttpError = require('../../utils/HttpError')
 
 
@@ -55,27 +54,27 @@ async function get_participants(req, res, next) {
 
 async function status(req, res, next) {
     try {
+        let payload = []
+        
         // Find all the activities that need to be graded manually (of this event)
-        const activitySets = await res.locals.event.getActivitySets({
-            include: {
-                model: Activity,
-                attributes: ['id', 'name'],
+        const activitySets = await res.locals.event.getActivitySets()
+        for (const set of activitySets) {
+            const activities = await set.getActivities({
                 where: {
                     gradingType: 'judge'
-                },
-                incldue: [
-                    [Sequelize.literal(`(SELECT COUNT(*) FROM Submissions WHERE Submissions.activityId = activity.id)`), 'total_submissions'],
-                    [Sequelize.literal(`(SELECT COUNT(*) FROM Submissions WHERE Submissions.activityId = activity.id AND Submissions.graded = 1)`), 'graded_submissions']
-                ]
-            }
-        })
-        // Reformat the output
-        let payload = []
-        activitySets.forEach((set) => {
-            set.activities.forEach((activity) => {
-                payload.push(activity)
+                }
             })
-        })
+            for (const activity of activities) {
+                // Find all the submissions to this activity
+                const submissions = await activity.getSubmissions()
+                let graded = 0
+                for (const submission of submissions) {
+                    // Tally them up
+                    if(submission.graded) graded++
+                }
+                payload.push({id: activity.id, name: activity.name, total_submissions: submissions.length, graded_submissions: graded})
+            }
+        }
 
         return res
             .status(200)
@@ -94,38 +93,35 @@ async function get_submissions_by_activity(req, res, next) {
             .status(200)
             .json(submissions)
     } catch (err) {
-        
+        return next(new HttpError(500, 'unexpected error', err))
     }
 }
 
 async function get_submissions_by_participant(req, res, next) {
     try {
+        let payload = []
         // Find all the activities that need to be graded manually (of this event)
-        const activitySets = await res.locals.event.getActivitySets({
-            include: {
-                model: Activity,
-                attributes: ['id'],
+        const activitySets = await res.locals.event.getActivitySets()
+        for (const set of activitySets) {
+            const activities = await set.getActivities({
                 where: {
                     gradingType: 'judge'
                 }
+            })
+            for (const activity of activities) {
+                // Find all the submissions to this activity
+                const submissions = await activity.getSubmissions({
+                    where: {
+                        participantId: req.params.participantID
+                    }
+                })
+                payload = payload.concat(submissions)
             }
-        })
-        // Reformat the activity ids
-        let activityIDs = []
-        activitySets.activities.forEach((activity) => {
-            activityIDs.push(activity.id)
-        })
+        }
 
-        const submissions = await res.locals.participant.getSubmissions({
-            where: {
-                activityId: activityIDs  // Giving it a list means it will look if it's in this list
-            }
-        })
-
-        // Should only be one participant since id is primary key
         return res
             .status(200)
-            .json(submissions)
+            .json(payload)
     } catch (err) {
         return next(new HttpError(500, 'unexpected error', err))
     }
@@ -137,12 +133,13 @@ async function grade_submission(req, res, next) {
         if(req.body.mark > res.locals.activity.pointValue) return next(new HttpError(406, 'given grade is higher than maximum possible mark'))
         res.locals.submission.mark = req.body.mark
         res.locals.submission.graded = true
-        await res.locals.submission.sync()
+        await res.locals.submission.save()
 
         return res
             .status(201)
             .json({"message": `sucessfully graded submission ${req.params.submissionID}`})
     } catch (err) {
+        console.log(err)
         return next(new HttpError(500, 'unexpected error', err))
     }
 }

@@ -1,6 +1,5 @@
 const { DataTypes, Model } = require('sequelize')
 const sequelize = require('../connection')
-const isBool = require('../../middleware/data_validation').isBool
 
 class Submission extends Model {}
 
@@ -45,7 +44,9 @@ const SubmissionModel = {
         defaultValue: false,
         allowNull: false,
         validate: {
-            isBool
+            isBool(value) {
+                if(value != true && value != false) throw new HttpError(406, 'must be true or false')
+            }
         }
     }
 }

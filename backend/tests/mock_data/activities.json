@@ -4,7 +4,8 @@
         "description": "what's ur fav food",
         "inputType": "str",
         "gradingType": "answer",
-        "answers": ["hamburger"]
+        "answers": ["hamburger"],
+        "pointValue": 5
     },
     "activity2": {
         "name": "pushups",
@@ -16,7 +17,7 @@
     "activity3": {
         "name": "picture",
         "description": "cool pic",
-        "inputType": "file",
+        "inputType": "str",
         "gradingType": "judge",
         "pointValue": 10
     }

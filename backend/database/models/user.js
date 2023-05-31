@@ -27,6 +27,7 @@ const UserModel = {
         },
         // Data validation, regexp for 64 character hex
         validate: {
+            notEmpty: true,
             is: /^[0-9a-f]{64}$/i
         }
     }

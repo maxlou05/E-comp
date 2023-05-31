@@ -1,5 +1,5 @@
-const ActivitySet = require("../../../database/models/activity_set")
-const HttpError = require("../../../utils/HttpError")
+const ActivitySet = require("../../database/models/activity_set")
+const HttpError = require("../../utils/HttpError")
 
 
 
@@ -64,7 +64,12 @@ async function edit_activitySet(req, res, next) {
 
 async function delete_activitySet(req, res, next) {
     // Associations handle the rest, no error for deleting
-    await res.locals.event.removeActivitySet(res.locals.activitySet)
+    await ActivitySet.destroy({
+        where: {
+            id: req.params.activitySetID
+        }
+    })
+    // await res.locals.event.removeActivitySet(res.locals.activitySet)  not sure why the built-in functions just hang
     return res
         .status(200)
         .json({"message": "successfully deleted activity set"})

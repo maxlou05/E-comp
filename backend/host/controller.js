@@ -1,5 +1,6 @@
 const Event = require('../database/models/event')
 const Participant = require('../database/models/participant')
+const Team = require('../database/models/team')
 const HttpError = require('../utils/HttpError')
 
 
@@ -64,6 +65,37 @@ async function publish_event(req, res, next) {
     }
 }
 
+async function create_team(req, res, next) {
+    try {
+        // Make sure event is still a draft
+        if(!res.locals.event.draft) return next(new HttpError(403, 'cannot add teams once event is published'))
+        await Team.create({name: req.body.team, eventId: res.locals.event.id})
+    return res
+        .status(201)
+        .json({"message": "successfully created a team"})
+    } catch (err) {
+        return next(new HttpError(500, 'unexpected error', err))
+    }
+    
+}
+
+async function delete_team(req, res, next) {
+    try {
+        // Make sure event is still a draft
+        if(!res.locals.event.draft) return next(new HttpError(403, 'cannot delete teams once event is published'))
+        await Team.destroy({
+            where: {
+                name: req.params.teamName
+            }
+        })
+    return res
+        .status(200)
+        .json({"message": "successfully deleted the team"})
+    } catch (err) {
+        return next(new HttpError(500, 'unexpected error', err))
+    }
+}
+
 async function get_event(req, res, next) {
     // Already queried this event in host validation
     return res
@@ -102,6 +134,8 @@ async function delete_user(req, res, next) {
 module.exports.create = create_event
 module.exports.publish = publish_event
 module.exports.get_events = get_events
+module.exports.create_team = create_team
+module.exports.delete_team = delete_team
 module.exports.get_event = get_event
 module.exports.delete_event = delete_event
 module.exports.delete_user = delete_user

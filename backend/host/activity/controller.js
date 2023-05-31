@@ -1,5 +1,5 @@
-const Activity = require('../../../../database/models/activity')
-const HttpError = require('../../../../utils/HttpError')
+const Activity = require('../../database/models/activity')
+const HttpError = require('../../utils/HttpError')
 
 
 
@@ -44,28 +44,37 @@ async function create_activity(req, res, next) {
 }
 
 async function edit_activity(req, res, next) {
-    // Only allow editing if the event is not published
-    if(res.locals.event.draft) {
-        const activity = res.locals.activity
-        if(req.body.name) activity.name = req.body.name
-        if(req.body.description) activity.description = req.body.description
-        if(req.body.inputType) activity.inputType = req.body.inputType
-        if(req.body.gradingType) activity.gradingType = req.body.gradingType
-        if(req.body.pointValue) activity.pointValue = req.body.pointValue
-        if(req.body.answers) activity.answers = req.body.answers
+    try {
+        // Only allow editing if the event is not published
+        if(res.locals.event.draft) {
+            const activity = res.locals.activity
+            if(req.body.name) activity.name = req.body.name
+            if(req.body.description) activity.description = req.body.description
+            if(req.body.inputType) activity.inputType = req.body.inputType
+            if(req.body.gradingType) activity.gradingType = req.body.gradingType
+            if(req.body.pointValue) activity.pointValue = req.body.pointValue
+            if(req.body.answers) activity.answers = req.body.answers
 
-        await activity.save()
-        return res
-            .status(201)
-            .json({"message": "activity updated"})
+            await activity.save()
+            return res
+                .status(201)
+                .json({"message": "activity updated"})
+        }
+
+        return next(new HttpError(403, 'cannot edit activity after event is published'))
+    } catch (err) {
+        return next(new HttpError(500, 'unexpected error', err))
     }
-
-    return next(new HttpError(403, 'cannot edit activity after event is published'))
 }
 
 async function delete_activity(req, res, next) {
     // Associations handle the rest, no error for deleting
-    await res.locals.activitySet.removeActivity(res.locals.activity)
+    await Activity.destroy({
+        where: {
+            id: req.params.activityID
+        }
+    })
+    // await res.locals.activitySet.removeActivity(res.locals.activity)  not sure why the built-in functions just hang
     return res
         .status(200)
         .json({"message": "successfully deleted the activity"})

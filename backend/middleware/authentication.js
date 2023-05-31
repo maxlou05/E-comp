@@ -6,6 +6,7 @@ const HttpError = require('../utils/HttpError')
 const Participant = require('../database/models/participant')
 const Submission = require('../database/models/submission')
 const Activity = require('../database/models/activity')
+const ActivitySet = require('../database/models/activity_set')
 
 
 
@@ -91,18 +92,11 @@ async function activityBelongsToSet(req, res, next) {
 }
 
 async function participantBelongsToUser(req, res, next) {
-    const user = await User.findByPk(res.locals.username, {
-        include: {
-            model: Participant,
-            where: {  // Required is automatically true when using where clauses
-                id: req.params.participantID
-            }
-        }
-    })
-    if(!user) return next(new HttpError(403, `the participant with id '${req.params.participantID}' does not belong to the user '${res.locals.username}'`))
-    // Save the user and the participant for later
-    res.locals.user = user
-    res.locals.participant = user.participants[0]
+    const participant = await Participant.findByPk(req.params.participantID)
+    if(!participant) return next(new HttpError(404, `the participant with id '${req.params.participantID}' does not exist`))
+    if(participant.userUsername != res.locals.username) return next(new HttpError(403, `the participant with id '${req.params.participantID}' does not belong to the user '${res.locals.username}'`))
+    // Save the participant for later
+    res.locals.participant = participant
     next()
 }
 
@@ -119,21 +113,26 @@ async function participantBelongsToEvent(req, res, next) {
 }
 
 async function submissionBelongsToEvent(req, res, next) {
-    const activitySets = await res.locals.event.getActivitySets({
-        include: {
-            model: Activity,
-            include: {
-                model: Submission,
-                where: {
-                    id: req.params.submissionID
-                }
-            }
+    const submission = await Submission.findByPk(req.params.submissionID)
+    const activity = await Activity.findByPk(submission.activityId)
+    const activitySet = await ActivitySet.findByPk(activity.activitySetId)
+    if(activitySet.eventId != res.locals.event.id) return next(new HttpError(404, `the submission with id '${req.params.submissionID}' does not exist`))
+
+    // Save the submission and activity
+    res.locals.submission = submission
+    res.locals.activity = activity
+    next()
+}
+
+async function teamBelongsToEvent(req, res, next) {
+    const teams = await res.locals.event.getTeams({
+        where: {
+            name: req.params.teamName
         }
     })
-    if(activitySets.length == 0) return next(new HttpError(404, `the submission with id '${req.params.submissionID}' does not exist`))
-    // Save the submission and activity
-    res.locals.activity = activitySets[0].activities[0]
-    res.locals.submission = activitySets[0].activities[0].submissions[0]
+    if(teams.length == 0) return next(new HttpError(404, `the team with name '${req.params.teamName}' does not exist`))
+    // Save the team
+    res.locals.team = teams[0]
     next()
 }
 
@@ -145,3 +144,4 @@ module.exports.activityBelongsToSet = activityBelongsToSet
 module.exports.participantBelongsToEvent = participantBelongsToEvent
 module.exports.participantBelongsToUser = participantBelongsToUser
 module.exports.submissionBelongsToEvent = submissionBelongsToEvent
+module.exports.teamBelongsToEvent = teamBelongsToEvent

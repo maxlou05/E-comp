@@ -2,12 +2,13 @@
   "name": "ecomp_backend_api_server",
   "version": "1.0",
   "description": "E-comp backend API server",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jose": "^4.13.1",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.1.2",
     "object-hash": "^3.0.0",
     "sequelize": "^6.31.0"
