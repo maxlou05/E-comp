@@ -17,7 +17,6 @@ const set_data = require('../mock_data/activitySets.json')
 const activity_data = require('../mock_data/activities.json')
 
 describe('Exercising CRUD operations and authentication on activities', () => {
-    let token
     let eventID
     let setID
     let activityID
@@ -42,12 +41,11 @@ describe('Exercising CRUD operations and authentication on activities', () => {
             .set('Content-type', 'application/json')
             .send(user_data.admin)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-        token = res.body.access_token
 
         // Create an event
         res = await agent.put('/host')
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(event_data.complete_event)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         eventID = res.body.id
@@ -55,7 +53,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
         // Create activity set
         res = await agent.put(`/host/${eventID}/edit/activitySets`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(set_data.set1)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         setID = res.body.id
@@ -65,7 +63,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should create activity 1', (done) => {
         agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(activity_data.activity1)
             .expect('Content-type', /json/)
             .expect(201)
@@ -79,7 +77,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should create activity 2', (done) => {
         agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({})
             .expect('Content-type', /json/)
             .expect(201)
@@ -94,7 +92,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should delete activity', function (done) {
         agent.delete(`/host/${eventID}/edit/activitySets/${setID}/activities/${activityID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -107,7 +105,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should return activity sets', (done) => {
         agent.get(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -120,7 +118,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should create activity 3', (done) => {
         agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({})
             .expect('Content-type', /json/)
             .expect(201)
@@ -135,7 +133,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should edit activity 3', (done) => {
         agent.post(`/host/${eventID}/edit/activitySets/${setID}/activities/${activityID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(activity_data.activity3)
             .expect('Content-type', /json/)
             .expect(201)
@@ -149,7 +147,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should create activity 4', (done) => {
         agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(activity_data.activity2)
             .expect('Content-type', /json/)
             .expect(201)
@@ -163,7 +161,7 @@ describe('Exercising CRUD operations and authentication on activities', () => {
     it('should return activities', (done) => {
         agent.get(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {

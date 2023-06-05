@@ -17,10 +17,7 @@ const set_data = require('../mock_data/activitySets.json')
 const activity_data = require('../mock_data/activities.json')
 
 describe('Exercising CRUD operations and authentication on events', () => {
-    let token
     let eventID
-    let setID
-    let activityID
 
     // Before doing the tests, must intialize/setup the database
     before('run setup', async () => {
@@ -41,14 +38,13 @@ describe('Exercising CRUD operations and authentication on events', () => {
             .set('Content-type', 'application/json')
             .send(user_data.admin)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-        token = res.body.access_token
     })
 
     // Creating event and stuff
     it('should create an event draft', (done) => {
         agent.put('/host')
             .set('Content-type', 'application/json')    
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(event_data.empty_event)
             .expect('Content-type', /json/)
             .expect(201)
@@ -63,7 +59,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should not publish (unfinished draft)', (done) => {
         agent.post(`/host/${eventID}/publish`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(406)
             .end((err, res) => {
@@ -76,7 +72,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should return all created events', (done) => {
         agent.get('/host')
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -89,7 +85,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should delete the event', (done) => {
         agent.delete(`/host/${eventID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -102,7 +98,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should return all created events', (done) => {
         agent.get('/host')
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -115,7 +111,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should create an event draft', (done) => {
         agent.put('/host')
             .set('Content-type', 'application/json')    
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(event_data.empty_event)
             .expect('Content-type', /json/)
             .expect(201)
@@ -130,7 +126,7 @@ describe('Exercising CRUD operations and authentication on events', () => {
     it('should edit into a completed event (without any activity sets or activities)', (done) => {
         agent.post(`/host/${eventID}/edit`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(event_data.complete_event)
             .expect('Content-type', /json/)
             .expect(201)
@@ -140,49 +136,4 @@ describe('Exercising CRUD operations and authentication on events', () => {
                 done()
             })
     })
-
-    // // Publish the event
-    // it('should publish', (done) => {
-    //     agent.post(`/host/${eventID}/publish`)
-    //         .set('Content-type', 'application/json')
-    //         .set('Authorization', token)
-    //         .expect('Content-type', /json/)
-    //         .expect(201)
-    //         .end((err, res) => {
-    //             if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-    //             if(err) return done(err)
-    //             done()
-    //         })
-    // })
-
-    // it('should return all created events', (done) => {
-    //     agent.get('/host')
-    //         .set('Content-type', 'application/json')
-    //         .set('Authorization', token)
-    //         .expect('Content-type', /json/)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-    //             if(err) return done(err)
-    //             done()
-    //         })
-    // })
-
-    // it('should show up under public events', (done) => {
-    //     agent.get('/events/find')
-    //         .set('Content-type', 'application/json')
-    //         .expect('Content-type', /json/)
-    //         .expect(200)
-    //         .end((err, res) => {
-    //             if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-    //             if(err) return done(err)
-    //             done()
-    //         })
-    // })
-
-    // User joins event
-
-
-    // User submits to all 3 activities
-
 })

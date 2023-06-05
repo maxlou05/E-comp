@@ -17,12 +17,9 @@ const set_data = require('../mock_data/activitySets.json')
 const activity_data = require('../mock_data/activities.json')
 
 describe('Test all the grading functions', () => {
-    let token
     let eventID
     let setID
     let activityID
-    let token1
-    let token2
     let participantID
     let submissionID
 
@@ -46,12 +43,11 @@ describe('Test all the grading functions', () => {
             .set('Content-type', 'application/json')
             .send(user_data.admin)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-        token = res.body.access_token
 
         // Create an event
         res = await agent.put('/host')
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(event_data.complete_event)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         eventID = res.body.id
@@ -59,7 +55,7 @@ describe('Test all the grading functions', () => {
         // Create activity set
         res = await agent.put(`/host/${eventID}/edit/activitySets`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(set_data.set1)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         setID = res.body.id
@@ -67,7 +63,7 @@ describe('Test all the grading functions', () => {
         // Create activity
         res = await agent.put(`/host/${eventID}/edit/activitySets/${setID}/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send(activity_data.activity3)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         activityID = res.body.id
@@ -75,20 +71,20 @@ describe('Test all the grading functions', () => {
         // Create teams
         res = await agent.put(`/host/${eventID}/team`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({team: "team1"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
 
         res = await agent.put(`/host/${eventID}/team`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({team: "team2"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
 
         // Publish
         res = await agent.post(`/host/${eventID}/publish`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
 
         // Create participant 1
@@ -101,18 +97,17 @@ describe('Test all the grading functions', () => {
             .set('Content-type', 'application/json')
             .send(user_data.user1)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-        token1 = res.body.access_token
 
         res = await agent.put(`/participant/join/${eventID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token1)
+            .withCredentials(true)
             .send({team: "team1"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         participantID = res.body.id
 
         res = await agent.put(`/participant/${participantID}/submit/${activityID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token1)
+            .withCredentials(true)
             .send({answer: "team 1 rocks"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
 
@@ -126,26 +121,32 @@ describe('Test all the grading functions', () => {
             .set('Content-type', 'application/json')
             .send(user_data.user2)
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
-        token2 = res.body.access_token
 
         res = await agent.put(`/participant/join/${eventID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token2)
+            .withCredentials(true)
             .send({team: "team2"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
         participantID = res.body.id
 
         res = await agent.put(`/participant/${participantID}/submit/${activityID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token2)
+            .withCredentials(true)
             .send({answer: "team 2 is lit"})
         if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+
+        // Re-obtain the host's token
+        res = await agent.post('/account/login')
+            .set('Content-type', 'application/json')
+            .send(user_data.admin)
+        if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+
     })
 
     it('should get grading status', function (done) {
         agent.get(`/host/${eventID}/grading/status`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -158,7 +159,7 @@ describe('Test all the grading functions', () => {
     it('should get grading activities', function (done) {
         agent.get(`/host/${eventID}/grading/activities`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -171,7 +172,7 @@ describe('Test all the grading functions', () => {
     it('should get grading participants', function (done) {
         agent.get(`/host/${eventID}/grading/participants`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -184,7 +185,7 @@ describe('Test all the grading functions', () => {
     it('should list all submissions by activity', (done) => {
         agent.get(`/host/${eventID}/grading/submissions/activity/${setID}/${activityID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -197,7 +198,7 @@ describe('Test all the grading functions', () => {
     it('should list all submissions by participant', (done) => {
         agent.get(`/host/${eventID}/grading/submissions/participant/${participantID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -211,7 +212,7 @@ describe('Test all the grading functions', () => {
     it('should get leaderboards', (done) => {
         agent.get(`/events/${eventID}/leaderboards`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -224,7 +225,7 @@ describe('Test all the grading functions', () => {
     it('grade submission', (done) => {
         agent.post(`/host/${eventID}/grading/submissions/${submissionID}`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({mark: 6})
             .expect('Content-type', /json/)
             .expect(201)
@@ -238,7 +239,7 @@ describe('Test all the grading functions', () => {
     it('should get leaderboards', (done) => {
         agent.get(`/events/${eventID}/leaderboards`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {
@@ -251,7 +252,7 @@ describe('Test all the grading functions', () => {
     it('should get grading status', function (done) {
         agent.get(`/host/${eventID}/grading/status`)
             .set('Content-type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .expect('Content-type', /json/)
             .expect(200)
             .end((err, res) => {

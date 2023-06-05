@@ -14,7 +14,7 @@ const ActivitySet = require('../database/models/activity_set')
 async function authenticate(req, res, next) {
     try {
         // Verify the token
-        const payload = await jwt_utils.verify(req.headers.authorization.split(' ')[1])
+        const payload = await jwt_utils.verify(req.cookies.accessToken.split(' ')[1])
         // If token is invalid, pass on the error to error handler
         if (payload.err) {
             return next(payload.err)

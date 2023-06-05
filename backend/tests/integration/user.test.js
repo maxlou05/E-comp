@@ -39,8 +39,7 @@ describe('Exercising CRUD operations and authentication on users table', () => {
             })
     })
 
-    // Login to the new account (get token)
-    let token = ''
+    // Login to the new account (should save token in cookie)
     it('should obtain a token', (done) => {
         agent.post('/account/login')
             .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -50,19 +49,45 @@ describe('Exercising CRUD operations and authentication on users table', () => {
             .end((err, res) => {
                 if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
-                token = res.body.access_token  // Save the token for later
                 return done()
             })
     })
 
-    // Use wrong token
+    // Logout
     it('should return token error', (done) => {
+        agent.post('/account/logout')
+            .set('Content-Type', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if (err) return done(err)
+                return done()
+            })
+    })
+
+    // Token error
+    it('should give token error', (done) => {
         agent.post('/account')
             .set('Content-Type', 'application/json')
-            .set('Authorization', 'wrong token')
-            .send({'password': user_data.admin.password})
+            .withCredentials(true)
+            .send({'password': user_data.admin.password, 'new_password': user_data.new_password})
             .expect('Content-Type', /json/)
-            .expect(401)
+            .expect(406)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if (err) return done(err)
+                return done()
+            })
+    })
+
+    // Login
+    it('should obtain a token', (done) => {
+        agent.post('/account/login')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send(user_data.admin)
+            .expect('Content-Type', /json/)
+            .expect(200)
             .end((err, res) => {
                 if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
@@ -74,7 +99,7 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should change the password', (done) => {
         agent.post('/account')
             .set('Content-Type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({'password': user_data.admin.password, 'new_password': user_data.new_password})
             .expect('Content-Type', /json/)
             .expect(201)
@@ -109,7 +134,6 @@ describe('Exercising CRUD operations and authentication on users table', () => {
             .end((err, res) => {
                 if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
                 if (err) return done(err)
-                // token = res.body.access_token  // Note that not updating the token still works because 30 mins has not passed yet
                 return done()
             })
     })
@@ -132,7 +156,7 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     it('should delete the user', (done) => {
         agent.delete('/account')
             .set('Content-Type', 'application/json')
-            .set('Authorization', token)
+            .withCredentials(true)
             .send({'password': user_data.new_password})
             .expect('Content-Type', /json/)
             .expect(200)

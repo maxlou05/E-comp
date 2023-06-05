@@ -6,8 +6,8 @@ const HTTP_Error = require('./HttpError')
 config({ path: '../.env'})
 const secret = new TextEncoder().encode(process.env.JWK)
 
-// Create a token, default expiration is in 30 minutes
-async function create_token(body, time='30min') {
+// Create a token, default expiration is in 1 hour
+async function create_token(body, time='1h') {
     return await new jose.SignJWT(body)
         .setProtectedHeader({alg: process.env.JWT_ALG})
         .setIssuedAt()

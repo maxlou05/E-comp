@@ -11,13 +11,19 @@ const app = express()
 const urlencodedParser = express.urlencoded({ extended: false })
 // Create a application/json body parser
 const jsonParser = express.json({ strict: false })  // Allows primitive types instead of arrays and objects
+// Create a cookoie parser
+const cookieParser = require('cookie-parser')
 
 // Global settings: alaways use the parsers (middleware) in case recieving body data (these go first)
 app.use(urlencodedParser)
 app.use(jsonParser)
+app.use(cookieParser())
 
-// Allow CORS if running frontend and backend the same server
-app.use(cors())
+// CORS settings since frontend and backend are different servers
+app.use(cors({
+    allowedHeaders: 'Content-Type',
+    credentials: true
+}))
 
 // Import the routers
 const accountRouter = require('./account/route')

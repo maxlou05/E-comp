@@ -13,5 +13,6 @@ router.put('/', controller.create_account)
 router.post('/', auth.authenticate, auth.checkPassword, controller.change_password)
 router.delete('/', auth.authenticate, auth.checkPassword, controller.delete_account)
 router.post('/login', auth.checkPassword, controller.token)
+router.post('/logout', controller.logout)
 
 module.exports = router

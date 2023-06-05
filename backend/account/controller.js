@@ -31,7 +31,15 @@ async function token(req, res) {
 
     return res
         .status(200)
-        .json({"message": "login success!", "access_token": `Bearer ${jwt}`})
+        .set('set-cookie', `accessToken=Bearer ${jwt}; Path=/; SameSite=Lax; Max-Age=3600; HttpOnly`)
+        .json({"message": "login success!"})
+}
+
+async function logout(req, res) {
+    return res
+        .status(200)
+        .set('set-cookie', `accessToken=logged out; Expires=Thu, 01 Jan 1970 00:00:00 UTC`)
+        .json({"message": "successfully logged out"})
 }
 
 async function change_password(req, res) {
@@ -70,3 +78,4 @@ module.exports.create_account = create_account
 module.exports.change_password = change_password
 module.exports.delete_account = delete_account
 module.exports.token = token
+module.exports.logout = logout
