@@ -53,6 +53,19 @@ describe('Exercising CRUD operations and authentication on users table', () => {
             })
     })
 
+    it('should get username', function (done) {
+        agent.get('/account')
+            .set('Content-Type', 'application/json')
+            .withCredentials(true)
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end((err, res) => {
+                if(process.env.TEST_LOGS >= 1) console.log('response: ', res.body)
+                if (err) return done(err)
+                return done()
+            })
+    })
+
     // Logout
     it('should return token error', (done) => {
         agent.post('/account/logout')

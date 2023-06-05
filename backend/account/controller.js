@@ -9,6 +9,12 @@ const User = require('../database/models/user')
 config({ path: '../.env'})
 
 /**************** Handlers ****************/
+async function get_user(req, res, next) {
+    return res
+        .status(200)
+        .json({"user": res.locals.username})
+}
+
 async function create_account(req, res, next) {
     try {
         // Build and save a new user (uploads it database)
@@ -74,6 +80,7 @@ async function delete_account(req, res) {
 }
 
 // Export all the functions
+module.exports.get_user = get_user
 module.exports.create_account = create_account
 module.exports.change_password = change_password
 module.exports.delete_account = delete_account
