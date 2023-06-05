@@ -4,7 +4,6 @@ import styles from './styles/CircleButton.module.css';
 import Link from 'next/link';
 
 export function CircleButton(props){
-  console.log("Click CLICK CLICK")
   return(
     <Link href={props.link}
       className={styles.CircleButton}

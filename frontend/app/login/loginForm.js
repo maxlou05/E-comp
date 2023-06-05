@@ -8,13 +8,6 @@ import styles from '../styles/Login.module.css';
 
 import {CircleButton} from '../src/components/CircleButton.js'
 
-
-const axios = require('axios').default;
-const backend = axios.create({
-    baseURL: process.env.BACKEND_HOST,
-    timeout: 1000,
-    withCredentials: true});
-
 export function LoginForm(props){
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('')
@@ -22,10 +15,16 @@ export function LoginForm(props){
   const [password, setPassword] = useState('')
 
   async function handleLogin(e) {
+    const axios = require('axios').default;
+    const backend = axios.create({
+        baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
+        timeout: 1000,
+        withCredentials: true});
+
     e.preventDefault();
-    try{const {response} = await backend.post('/account/login',{username:username, password:password});
-        console.log("11111");
-        router.push('/home');
+    try{const response = await backend.post('/account/login',{username:username, password:password});
+        console.log(response);
+        router.push('/');
         }
     catch(err) {
       console.log("error");
@@ -34,22 +33,22 @@ export function LoginForm(props){
     }
   }
   return(
-  <div>
-  <form onSubmit={handleLogin}>
-  <label className={styles.TextField}>
-    Username:
-    <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-  </label>
-  <label className={styles.TextField}>
-      Password:
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
-  </label>
-  <div className={styles.break} />
-    <button type="submit" className={styles.submit}>Login→ </button>
-   </form>
-      <button className={styles.CreateAccount} onClick={()=>router.push('/createAccount')}> Create a new account </button>
-   <div className={styles.break} />
-   <p style={{color:"red"}}> {errorMessage} </p>
-   </div>
+    <div>
+      <form onSubmit={handleLogin}>
+        <label className={styles.TextField}>
+          Username:
+          <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+        </label>
+        <label className={styles.TextField}>
+          Password:
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
+        </label>
+        <div className={styles.break} />
+        <button type="submit" className={styles.submit}>Login→ </button>
+      </form>
+      <button className={styles.CreateAccount} onClick={() => router.push('/createAccount')}> Create a new account </button>
+      <div className={styles.break} />
+      <p style={{color:"red"}}> {errorMessage} </p>
+    </div>
   )
 }

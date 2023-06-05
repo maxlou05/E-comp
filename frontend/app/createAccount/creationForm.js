@@ -5,12 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import styles from '../styles/Login.module.css';
 
-const axios = require('axios').default;
-const backend = axios.create({
-    baseURL: process.env.BACKEND_HOST,
-    timeout: 1000,
-    withCredentials: true});
-
 export function CreationForm(){
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('')
@@ -18,8 +12,18 @@ export function CreationForm(){
   const [newPassword, setNewPassword] = useState('')
 
   async function handleCreation(e){
+    console.log("#####################!!!!!!!!@@@@@@@@@@@@")
+    console.log(process.env)
+    const axios = require('axios').default;
+    const backend = axios.create({
+        baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
+        timeout: 1000,
+        withCredentials: true});
+
+    e.preventDefault()
+    console.log(newUsername, newPassword)
     try{const response = await backend.put('/account',{username:newUsername, password:newPassword});
-        console.log("11111");
+        console.log(response);
         router.push('/login');
         }
     catch(err) {

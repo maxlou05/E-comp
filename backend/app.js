@@ -1,6 +1,8 @@
 const express = require('express')
 const errHandler = require('./middleware/error_handler')
 
+require('dotenv').config()
+
 // Load CORS middlware, accept everything
 const cors = require('cors')
 
@@ -21,6 +23,7 @@ app.use(cookieParser())
 
 // CORS settings since frontend and backend are different servers
 app.use(cors({
+    origin: process.env.FRONTEND_ORIGIN,
     allowedHeaders: 'Content-Type',
     credentials: true
 }))

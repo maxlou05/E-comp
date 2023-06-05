@@ -1,7 +1,5 @@
 import React from 'react';
 
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-
 import styles from './styles/Home.module.css';
 
 import {CircleButton} from './src/components/CircleButton.js'
