@@ -1,35 +1,17 @@
+'use client';
 import ReactDOM from 'react-dom/client';
 import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
-import Head from 'next/head';
 import styles from '../styles/Login.module.css';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-
-import {Home} from './index.js'
 
 const axios = require('axios').default;
 const backend = axios.create({
-    baseURL: 'http://localhost:6969',
-    timeout: 1000});
+    baseURL: process.env.BACKEND_HOST,
+    timeout: 1000,
+    withCredentials: true});
 
-export default function CreateAccount(props) {
-   return (
-     <CreationCircle
-      title="Create an Account"/>
-   );
-}
-
-function CreationCircle(props){
-  return(
-  <div className={styles.popup}>
-    <h2>{props.title} </h2>
-    <CreationForm/>
-  </div>
-  )
-}
-
-function CreationForm(){
+export function CreationForm(){
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('')
   const [newUsername, setNewUsername] = useState('')
@@ -66,4 +48,3 @@ function CreationForm(){
       </div>
      )
 }
-

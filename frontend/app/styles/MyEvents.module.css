@@ -1,0 +1,23 @@
+.grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  min-width: 100vw;
+  min-height: 10vh;
+ }
+
+.container{
+    min-height: 20vh;
+    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    column-gap: 8vw;
+}
+
+.container title{
+    size:15;
+}
+

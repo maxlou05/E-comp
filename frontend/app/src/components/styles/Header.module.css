@@ -1,0 +1,22 @@
+.Header{
+  min-height: 7vh;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom:-7vh;
+  margin-top:-7vh;
+}
+.PageHeader{
+  margin: 0 0 8 vh;
+  line-height: 1.15;
+  font-size: 5rem;
+  text-align: center;
+}
+
+.bg-variant {
+  background-color:#343deb !important
+ }
+
+

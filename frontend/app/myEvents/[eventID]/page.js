@@ -1,20 +1,29 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 
 import Head from 'next/head';
-import styles from '../styles/eventDash.module.css';
+import styles from '../../styles/EventDash.module.css';
 import Link from 'next/link';
 
 
-import {EventBar} from './myEvents.js';
-import {CircleButton} from './Components.js';
+import {EventBar} from '../../src/components/EventBar.js';
+import {Circle} from '../../src/components/Circle.js';
+import {Table} from '../../src/components/Table.js';
 
+const axios = require('axios').default;
+const backend = axios.create({
+    baseURL: process.env.BACKEND_HOST,
+    timeout: 1000,
+    withCredentials: true});
 
+export async function getEventActivityInfo () {
+  return( <> </>
+  )
+}
 //const EventData =await backend.get(/events/[**eventID**])
 
-export default function EventDash(){
+export default function EventDash(props){
   return(
-    <div>
+    <div className={styles.container}>
       <EventBar
         color="#b0f5cd"
         title="Event Title"
@@ -23,19 +32,19 @@ export default function EventDash(){
         icon="e-comp logo.svg"/>
 
       <div className={styles.rowOne}>
-        <CircleButton
+        <Circle
           size={20}
           title="My Points"
           text="167"
           color="#ffc7a8"/>
 
-        <CircleButton
+        <Circle
           size={20}
           title="Event Description"
           text="abcdefg"
           color="#ffc7a8"/>
 
-        <CircleButton
+        <Circle
           size={20}
           title="Submit Response"
           text="Record your activity"
@@ -43,18 +52,19 @@ export default function EventDash(){
       </div>
 
       <div className={styles.rowTwo}>
-      <CircleButton
+      <Circle
         size={20}
         title="My Stats"
         text="DATA GRID"
         color="#ffc7a8"/>
 
-      <CircleButton
+      <Circle
         size={20}
         title="LeaderBoards"
         text="DATA GRID"
         color="#ffc7a8"/>
 
+      <Table/>
       </div>
     </div>
   )
