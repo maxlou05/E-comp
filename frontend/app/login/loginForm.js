@@ -24,6 +24,7 @@ export function LoginForm(props){
     e.preventDefault();
     try{const response = await backend.post('/account/login',{username:username, password:password});
         console.log(response);
+        await backend.get('/account');
         router.push('/');
         }
     catch(err) {

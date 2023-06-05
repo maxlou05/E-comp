@@ -12,8 +12,6 @@ export function CreationForm(){
   const [newPassword, setNewPassword] = useState('')
 
   async function handleCreation(e){
-    console.log("#####################!!!!!!!!@@@@@@@@@@@@")
-    console.log(process.env)
     const axios = require('axios').default;
     const backend = axios.create({
         baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
@@ -23,12 +21,9 @@ export function CreationForm(){
     e.preventDefault()
     console.log(newUsername, newPassword)
     try{const response = await backend.put('/account',{username:newUsername, password:newPassword});
-        console.log(response);
         router.push('/login');
         }
     catch(err) {
-      console.log("error");
-      console.log(err);
       setErrorMessage(err.response.data.error);
     }
   }

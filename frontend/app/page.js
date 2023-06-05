@@ -6,11 +6,29 @@ import {CircleButton} from './src/components/CircleButton.js'
 import {Image} from './src/components/Image.js'
 import {MyProgressBar} from './src/components/MyProgressBar.js'
 
-export default function Home() {
+import {LoginText} from './src/components/LoginText.js'
+
+
+async function getData() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/todos/1/');
+  // The return value is not serialized
+  // You can return Date, Map, Set, etc.
+
+  // Recommendation: handle errors
+  if (!res.ok) {
+    // This will activate the closest error.js Error Boundary
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.json();
+}
+
+export default async function Home() {
+  const data = await getData()
+  console.log(data)
   return (
       <div>
           <div id="row-one" className={styles.rowOne}>
-            <p className={styles.test}> Hello </p>
             <CircleButton
               color="#ffdda8"
               size={24}
