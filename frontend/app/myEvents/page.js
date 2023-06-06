@@ -13,7 +13,7 @@ import {Header} from '../src/components/Header.js'
 import {CircleButton} from '../src/components/CircleButton.js'
 import {EventBar} from '../src/components/EventBar.js'
 import {MyProgressBar} from '../src/components/MyProgressBar.js'
-
+import {FormatDate} from '../src/FormatDate.js'
 
 async function PostTestEvent(){
   const eventResponse = await backend.put('/host',{
@@ -51,29 +51,6 @@ async function PostTestEvent(){
 //    </div>
 //  )
 
-//function MapEventBar(data){
-//  return(
-//    <div>
-//    {const EventBarList = UserEventData.map((i)=>
-//    <EventBar
-//      eventID = {i.event.id}
-//      color="#b0f5cd"
-//      title= {i.event.name}
-//      icon='/e-comp logo.svg'
-//      text={Date("05/05/23").toString() + "-" + event.end.toString()/>
-//  )
-//}
-
-//<EventBar
-//                color="#b0f5cd"
-//                title="Event Title"
-//                text="Event Description Event Description Event Description Event Description"
-//                startDate = {Date(5/5/2023)}
-//                endDate = {Date(6/30/2023)}
-//                points= {1000}
-//                icon="e-comp logo.svg"
-//                link='/'/>
-
 export default function MyEvents(UserEventData) {
   const eventList =
   [
@@ -101,7 +78,9 @@ export default function MyEvents(UserEventData) {
                 color="#b0f5cd"
                 title= {i.event.name}
                 icon='/e-comp logo.svg'
-                text={i.event.start.toString() + "-" + i.event.end.toString()}/>
+                text='Merivale annual eating contest !!!'
+                startDate = {i.event.start}
+                endDate = {i.event.end}/>
                ))}
         </div>
     </div>

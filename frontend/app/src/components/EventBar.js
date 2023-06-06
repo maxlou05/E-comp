@@ -4,6 +4,7 @@ import styles from './styles/EventBar.module.css';
 
 import {Image} from './Image.js';
 import {MyProgressBar} from './MyProgressBar.js';
+import {FormatDate} from '../FormatDate.js';
 
 export function EventBar(props){
   return(
@@ -21,9 +22,12 @@ export function EventBar(props){
             height = {75}/>
         </div>
         <div className={styles.container}>
-          <p>{props.text}</p>
+          <p>{FormatDate(props.startDate) + "-" + FormatDate(props.endDate)}</p>
           <MyProgressBar now={60}/>;
           <h3>Your Points: {props.points} </h3>
+        </div>
+        <div>
+          <p>{props.text}</p>
         </div>
     </Link>
   );
