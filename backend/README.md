@@ -25,6 +25,8 @@ Once a server is obtained, set the appropriate environment variables.
 - `HASH_ALG`: hasing algorithm for password
 - `SERVER_HOST`: ip of the API server
 - `SERVER_PORT`: port of the API server
+- `FRONTEND_HOST`: ip of the frontend server
+- `FRONTEND_PORT`: port of the frontend server
 - `TEST`: 
     - 0 for running using the database (MySQL, uses the DB environment variables)
     - 1 for running in test environment (SQLite memory)
