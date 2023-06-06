@@ -3,7 +3,7 @@ import Link from 'next/link';
 import styles from './styles/EventBar.module.css';
 
 import {Image} from './Image.js';
-import {MyProgressBar} from './MyProgressBar.js';
+import { LinearProgressWithLabel } from './ProgressBar.js';
 import {FormatDate} from '../FormatDate.js';
 
 export function EventBar(props){
@@ -21,9 +21,9 @@ export function EventBar(props){
             width = {75}
             height = {75}/>
         </div>
+        <LinearProgressWithLabel value={60}/>;
         <div className={styles.container}>
           <p>{FormatDate(props.startDate) + "-" + FormatDate(props.endDate)}</p>
-          <MyProgressBar now={60}/>;
           <h3>Your Points: {props.points} </h3>
         </div>
         <div>

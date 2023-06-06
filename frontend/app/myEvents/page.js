@@ -5,14 +5,11 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import ProgressBar from '../../node_modules/react-bootstrap/ProgressBar';
-
 import styles from '../styles/MyEvents.module.css';
 
 import {Header} from '../src/components/Header.js'
 import {CircleButton} from '../src/components/CircleButton.js'
 import {EventBar} from '../src/components/EventBar.js'
-import {MyProgressBar} from '../src/components/MyProgressBar.js'
 import {FormatDate} from '../src/FormatDate.js'
 
 async function PostTestEvent(){
@@ -61,7 +58,8 @@ export default function MyEvents(UserEventData) {
       icon: null,
       start: "2024-05-18T00:00:00",
       end: "2024-05-20T00:00:00",
-      result: null
+      result: null,
+      description: "Annual Merivale eating contest !!!"
       }
     }
   ]
@@ -71,14 +69,13 @@ export default function MyEvents(UserEventData) {
         <title> E-Comp - My Events</title>
       </Head>
         <div id="eventsList" className={styles.grid}>
-          <ProgressBar now={60} label={`${60}%`}/>
           {eventList.map((i)=> (
               <EventBar
                 eventID = {i.event.id}
                 color="#b0f5cd"
                 title= {i.event.name}
                 icon='/e-comp logo.svg'
-                text='Merivale annual eating contest !!!'
+                text={i.event.description}
                 startDate = {i.event.start}
                 endDate = {i.event.end}/>
                ))}

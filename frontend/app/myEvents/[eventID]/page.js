@@ -4,27 +4,33 @@ import Head from 'next/head';
 import styles from '../../styles/EventDash.module.css';
 import Link from 'next/link';
 
-
 import {EventBar} from '../../src/components/EventBar.js';
 import {Circle} from '../../src/components/Circle.js';
 import {Table} from '../../src/components/Table.js';
 
 const axios = require('axios').default;
-const backend = axios.create({
-    baseURL: process.env.BACKEND_HOST,
-    timeout: 1000,
-    withCredentials: true});
+    const backend = axios.create({
+        baseURL: `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}`,
+        timeout: 1000,
+        withCredentials: true});
 
-export async function getEventActivityInfo () {
-  return( <> </>
-  )
+async function getEventActivityInfo (id) {
+        try {
+            const response = await backend.get(`/events/${id}`)
+            console.log(response)
+            return response.data
+        } catch (err) {
+            console.log(err)
+            return null
+        }
 }
-//const EventData =await backend.get(/events/[**eventID**])
 
-export default function EventDash(props){
+export default async function EventDash(props){
+  const eventMetadata = await getEventActivityInfo(props.params.eventID)
   return(
     <div className={styles.container}>
       <EventBar
+        eventID={props.params.eventID}
         color="#b0f5cd"
         title="Event Title"
         text={Date("05/05/23").toString()}
@@ -53,13 +59,13 @@ export default function EventDash(props){
 
       <div className={styles.rowTwo}>
       <Circle
-        size={20}
+        size={45}
         title="My Stats"
         text="DATA GRID"
         color="#ffc7a8"/>
 
       <Circle
-        size={20}
+        size={45}
         title="LeaderBoards"
         text="DATA GRID"
         color="#ffc7a8"/>

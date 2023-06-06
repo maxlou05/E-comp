@@ -16,12 +16,12 @@
   justify-content:flex-start;
   align-items:center;
   padding-top:0;
-  column-gap: 10vw;
+  column-gap: 5vw;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 75vw;
+  max-width: 100vw;
   max-height: 45vh;
 }
 

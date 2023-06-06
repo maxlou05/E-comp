@@ -6,7 +6,7 @@ import { cookies } from 'next/dist/client/components/headers';
 import { ApiButton } from './ApiButton'
 
 async function getData() {
-    // For some stupid reason this both fetch and axios just won't send the cookie, even though the cookie exists and credentials is true
+    // For some reason this both fetch and axios just won't send the cookie, even though the cookie exists and credentials is true
     let token
     if(cookies().get('accessToken')) token = cookies().get('accessToken').value
     const res = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_HOST}:${process.env.NEXT_PUBLIC_BACKEND_PORT}/account`, {
@@ -27,9 +27,6 @@ async function getData() {
   }
 
 export async function LoginText(){
-    
-    console.log(cookies().has('accessToken'))
-    console.log(cookies().get('accessToken'))
     const data = await getData()
 
     // If have data, that means logged in
