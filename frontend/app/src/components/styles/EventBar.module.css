@@ -16,7 +16,6 @@
   border-radius: calc(var(--h)*1vh);
   overflow: hidden;
   flex-basis: 45%;
-  row-gap: 0px;
   text-decoration: none;
   border: 1px solid #eaeaea;
   transition: color 0.15s ease, border-color 0.15s ease;
@@ -32,7 +31,8 @@
   margin: 0;
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  row-gap: 90px;
+  justify-items: flex-start;
   align-items: flex-start;
   overflow: hidden;
 }
@@ -51,4 +51,7 @@
 }
 .EventBar:active{
   color:inherit;
+}
+.points{
+  justify-self: right;
 }

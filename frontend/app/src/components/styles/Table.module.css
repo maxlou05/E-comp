@@ -1,0 +1,7 @@
+.Table{
+ display: flex;
+ max-height: 80%;
+ max-width: 90%;
+ justify-content: center;
+ align-self: center;
+}

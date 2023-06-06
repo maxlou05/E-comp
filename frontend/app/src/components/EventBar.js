@@ -24,7 +24,7 @@ export function EventBar(props){
         <LinearProgressWithLabel value={60}/>;
         <div className={styles.container}>
           <p>{FormatDate(props.startDate) + "-" + FormatDate(props.endDate)}</p>
-          <h3>Your Points: {props.points} </h3>
+          <h3 className={styles.points}>Your Points: {props.points} </h3>
         </div>
         <div>
           <p>{props.text}</p>
