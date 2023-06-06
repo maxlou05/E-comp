@@ -44,7 +44,7 @@ async function token(req, res) {
 async function logout(req, res) {
     return res
         .status(200)
-        .set('set-cookie', `accessToken=logged out; Expires=Thu, 01 Jan 1970 00:00:00 UTC`)
+        .set('set-cookie', `accessToken=logged out; Path=/; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 UTC; HttpOnly`)
         .json({"message": "successfully logged out"})
 }
 

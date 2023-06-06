@@ -17,15 +17,15 @@ export function LoginForm(props){
   async function handleLogin(e) {
     const axios = require('axios').default;
     const backend = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
+        baseURL: `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}`,
         timeout: 1000,
         withCredentials: true});
 
     e.preventDefault();
     try{const response = await backend.post('/account/login',{username:username, password:password});
         console.log(response);
-        await backend.get('/account');
         router.push('/');
+        router.refresh()
         }
     catch(err) {
       console.log("error");

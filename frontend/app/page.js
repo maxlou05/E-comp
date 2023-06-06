@@ -6,7 +6,6 @@ import {CircleButton} from './src/components/CircleButton.js'
 import {Image} from './src/components/Image.js'
 import {MyProgressBar} from './src/components/MyProgressBar.js'
 
-import {LoginText} from './src/components/LoginText.js'
 
 
 async function getData() {

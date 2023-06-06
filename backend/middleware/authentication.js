@@ -14,7 +14,14 @@ const ActivitySet = require('../database/models/activity_set')
 async function authenticate(req, res, next) {
     try {
         // Verify the token
-        const payload = await jwt_utils.verify(req.cookies.accessToken.split(' ')[1])
+        console.log(req.headers)
+        console.log(req.cookies)
+        let payload
+        // Token should be in a cookie
+        if(req.cookies.accessToken) payload = await jwt_utils.verify(req.cookies.accessToken.split(' ')[1])
+        // In case the cookies did not send, check the 'Authorization' header as a backup
+        else payload = await jwt_utils.verify(req.headers.authorization.split(' ')[1])
+
         // If token is invalid, pass on the error to error handler
         if (payload.err) {
             return next(payload.err)
@@ -23,7 +30,7 @@ async function authenticate(req, res, next) {
         res.locals.username = payload.data.sub
         next()
     } catch (err) {
-        next(new HttpError(406, "wrong token format, should be 'Bearer [token]'", err))
+        next(new HttpError(406, "wrong token format, should be 'Bearer [token]'"))
     }
     
 }

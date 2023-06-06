@@ -14,7 +14,7 @@ export function CreationForm(){
   async function handleCreation(e){
     const axios = require('axios').default;
     const backend = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
+        baseURL: `http://localhost:${process.env.NEXT_PUBLIC_BACKEND_PORT}`,
         timeout: 1000,
         withCredentials: true});
 

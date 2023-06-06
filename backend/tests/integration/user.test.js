@@ -67,7 +67,7 @@ describe('Exercising CRUD operations and authentication on users table', () => {
     })
 
     // Logout
-    it('should return token error', (done) => {
+    it('should log out', (done) => {
         agent.post('/account/logout')
             .set('Content-Type', 'application/json')
             .expect('Content-Type', /json/)

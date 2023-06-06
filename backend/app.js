@@ -23,7 +23,7 @@ app.use(cookieParser())
 
 // CORS settings since frontend and backend are different servers
 app.use(cors({
-    origin: process.env.FRONTEND_ORIGIN,
+    origin: true,
     allowedHeaders: 'Content-Type',
     credentials: true
 }))

@@ -16,6 +16,7 @@ export default function RootLayout({children}) {
       <body>
         <div className={styles.container}>
             <Header/>
+            <LoginText/>
         </div>
         {children}
       </body>

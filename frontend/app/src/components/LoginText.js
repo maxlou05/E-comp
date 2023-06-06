@@ -1,46 +1,51 @@
-
 import React from 'react';
 
 import Link from 'next/link';
 
-import styles from './styles/LoginText.module.css';
+import { cookies } from 'next/dist/client/components/headers';
+import { ApiButton } from './ApiButton'
 
-//async function getLogin(){
-//    const axios = require('axios').default;
-//          const backend = axios.create({
-//              baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
-//              timeout: 1000,
-//              withCredentials: true});
-//
-//    const Response = await backend.get('/account');
-//    return(Response)
-//}
+async function getData() {
+    // For some stupid reason this both fetch and axios just won't send the cookie, even though the cookie exists and credentials is true
+    let token
+    if(cookies().get('accessToken')) token = cookies().get('accessToken').value
+    const res = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_HOST}:${process.env.NEXT_PUBLIC_BACKEND_PORT}/account`, {
+        method: 'GET',
+        credentials: "include",
+        cache: 'no-store',  // Want this to re-fetch on every call to update
+        headers: {
+            Authorization: token
+        }
+    });
+   
+    // Handle errors
+    if (!res.ok) {
+        return "need to login"
+    }
+   
+    return res.json();
+  }
 
 export async function LoginText(){
-    console.log("before axios");
-    const axios = require('axios').default;
-      const backend = axios.create({
-          baseURL: process.env.NEXT_PUBLIC_BACKEND_HOST,
-          timeout: 1000,
-          withCredentials: true});
+    
+    console.log(cookies().has('accessToken'))
+    console.log(cookies().get('accessToken'))
+    const data = await getData()
 
-    console.log("before response");
-
-    const Response = await axios.get('http://localhost:6969/account');
-
-    console.log("after response");
-
-    if (Response.data.user){
+    // If have data, that means logged in
+    if(data.user){
         return(
-        <div>
-            <p> You are current logged in as: {Response.data.user} </p>
-        </div>
+            <div>
+                <p> You are currently logged in as '{data.user}' </p>
+                <ApiButton text='Logout'
+                    url="/account/logout"
+                    method="POST"/>
+            </div>
         )
-    } else {
+    }
+    else {
         return(
-        <div>
-            <Link href='/login'> You are currently not logged in. Click here to Login </Link>
-        </div>
+            <Link href='/login'> Login </Link>
         )
     }
 }
